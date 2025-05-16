@@ -3761,7 +3761,9 @@
                 arrivalTime: 41,
                 cashOnDelivery: true,
                 shipName: "ONE/MSC",
-                notes: `收ENS:USD25/SET +ICS: USD30/SET`
+                notes: `1.所有中转港的货，必须在IST清关                                  
+2.此中转港口报价是货物2吨内报价，如果超过2吨，需跟操作重新确认费用                                                              
+3.转运港目的港会多收一个费用，Entry BOND fee ：USD 95 entry will be paid by receiver`
             },
             /* -----------------------------澳大利亚----------------------------------*/
             "MELBOURNE": {
@@ -5723,7 +5725,183 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 cashOnDelivery: false,
                 shipName: "",
                 notes:""
-            }
+            },
+
+              /* -----------------------------肯尼亚----------------------------------*/
+              "MOMBASA":{
+                country: "KENYA",
+                WCprice: {
+                    "0-1": -33,
+                    "1-3": -28,
+                    "3-10": -23,
+                },
+                BSprice: notPrice,
+                JXprice:notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "",
+                notes:`1.中转港两周1班船, 薰蒸，不收危品
+2. 肯尼亚（Kenya）COC认证是肯尼亚（Kenya）强制性的海关清关文件，没有该证书，货物抵达肯尼亚港口后将被拒绝入关
+3.单件重2.5吨, 整票不能超8吨，会有额外费用`
+              },
+              /* -----------------------------坦桑尼亚----------------------------------*/
+              "DAR ES SALAAM":{
+                country: "TANZANIA",
+                WCprice: {
+                    [tenVol]: 138,
+                },
+                BSprice: notPrice,
+                JXprice:notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+13",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:`1. 目的港不能高收，运费不能到付，中转港三周1班船
+2. 薰蒸  ，不收危品
+3.单票重量超5000kgs或超10cbm，case by case查询额外费  `
+              },
+              /* -----------------------------吉布提共和国----------------------------------*/
+              "DJIBOUTI":{
+                country: "DJIBOUTI",
+                WCprice: {
+                    [tenVol]: 104,
+                },
+                BSprice: notPrice,
+                JXprice:notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+6",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:`1. 薰蒸，不收危品，不能到付运费，不能高收目的港费用
+2.单票超10cbm或超5吨，需提前跟代理确认额外费用.
+3. 出口至非洲Djibouti的所有货载，必须持有ECTN（电子货物跟踪单）证书（=Electronic Cargo Tracking Note Certificate) ，并需要在出口提单和发票文件上显示 ECTN No. ，否则清关提货将会延误或产生不必要麻烦。`
+              },
+
+              /* -----------------------------黎巴嫩----------------------------------*/
+              "BEIRUT":{
+                country: "LEBANON",
+                WCprice: {
+                    [tenVol]: 119,
+                },
+                BSprice: notPrice,
+                JXprice:notPrice,
+                VIA: "",
+                ETD: "",
+                ETA: "",
+                arrivalTime: "29",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:`1. 目的港不能高收，运费不能到付
+2. 薰蒸  ，不收危品
+3.单票重量超5000kgs或超10cbm，case by case查询额外费 `
+              },
+
+              /* -----------------------------毛里求斯----------------------------------*/
+              "PORT LOUIS":{
+                country: "MAURITIUS",
+                WCprice: {
+                    [tenVol]: 75,
+                },
+                BSprice: {
+                    [tenVol]: 80,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "1",
+                ETA: "6",
+                arrivalTime: "22",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:"香港直拼,提单显示的唛头要以实际货物相符，否则到港将会产生更改费"
+              },
+
+              /* -----------------------------马达加斯加共和国----------------------------------*/
+              "TAMATAVE":{
+                country: "MADAGASCAR",
+                WCprice: {
+                    [tenVol]: 150,
+                },
+                BSprice: {
+                    [tenVol]: 155,
+                },
+                get JXprice() { return this.WCprice; },
+
+                VIA: "PORT LOUIS",
+                ETD: "PORT LOUIS",
+                ETA: "PORT LOUIS",
+                arrivalTime: "+10",
+                cashOnDelivery: true,
+                shipName: "",
+                notes:`香港直拼,提单显示的唛头要以实际货物相符，否则到港将会产生更改费`
+              },
+
+              /* -----------------------------法属留尼旺----------------------------------*/
+              "Point De Galet":{
+                country: "REUNION",
+                WCprice: {
+                    [tenVol]: 150,
+                },
+                BSprice: {
+                    [tenVol]: 155,
+                },
+                get JXprice() { return this.WCprice; },
+
+                VIA: "PORT LOUIS",
+                ETD: "PORT LOUIS",
+                ETA: "PORT LOUIS",
+                arrivalTime: "+10",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:`需预付VGM FEE AT PORT LOUIS :USD15/ SET+ENS:USD30SET`
+              },
+
+              /* -----------------------------塞舌尔----------------------------------*/
+              "MAHE":{
+                country: "SEYCHELLES",
+                WCprice: {
+                    [tenVol]: 245,
+                },
+                BSprice: {
+                    [tenVol]: 250,
+                },
+                get JXprice() { return this.WCprice; },
+
+                VIA: "PORT LOUIS",
+                ETD: "PORT LOUIS",
+                ETA: "PORT LOUIS",
+                arrivalTime: "+10",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:`需要加上 VGM Fee AT PLT  USD15/BL，只能预付`
+              },
+
+              /* -----------------------------马约特岛----------------------------------*/
+              "LONGONI":{
+                country: "MAYOTTE",
+                WCprice: {
+                    [tenVol]: 240,
+                },
+                BSprice: {
+                    [tenVol]: 245,
+                },
+                get JXprice() { return this.WCprice; },
+
+                VIA: "PORT LOUIS",
+                ETD: "PORT LOUIS",
+                ETA: "PORT LOUIS",
+                arrivalTime: "+10",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:`需要加上VGM FEE AT PLT:  USD15/BL，+ENS:USD30 SET 只能预付`
+              },
+
         };
 
 
