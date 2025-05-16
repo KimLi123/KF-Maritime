@@ -1,0 +1,5594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>海运费用计算器</title>
+    <style>
+        :root {
+            --primary-color: #007F00;
+            --secondary-color: #00A550;
+            --text-white: #FFFFFF;
+            --font-title: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            --font-body: 'PingFang SC', system-ui, sans-serif;
+        }
+
+        /* 头部LOGO区域 */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #logoCanvas {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            border: 2px solid var(--text-white);
+            border-radius: 6px;
+        }
+
+        .company-name {
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: 20px;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .input-group label {
+            font-size: 15px;
+            color: #333333;
+            font-weight: 500;
+        }
+
+        .company-info {
+            color: white;
+            flex: 1;
+            color: var(--text-white);
+        }
+
+        .company-info h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+
+        .company-info small {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* 统一表单控件样式 */
+        .input-group input[type="text"],
+        .input-group select,
+        .input-group textarea {
+            width: 200px;
+            padding: 2px 10px;
+            border: 2px solid var(--primary-color);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+
+
+
+        .checkbox-group input[type="checkbox"]:checked+span::after {
+            content: "✓";
+            position: absolute;
+            left: 2px;
+            top: -2px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* 按钮样式 */
+        button {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 127, 0, 0.1);
+        }
+
+        textarea {
+            position: fixed;
+            width: 500px;
+            height: 300px;
+            left: -9999px;
+            top: -9999px;
+            opacity: 0;
+            position: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            margin-top: 0;
+            padding-top: 0;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+        }
+
+        .input-group {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        label {
+            width: 150px;
+            margin-right: 10px;
+        }
+
+        input[type="text"] {
+            padding: 5px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #docError {
+            color: red;
+            font-weight: bolder;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            white-space: pre-line;
+            /* 保留换行符 */
+        }
+
+        .result p {
+            margin: 8px 0;
+        }
+
+        .result ul {
+            padding-left: 20px;
+        }
+
+        .result br {
+            display: block;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        /* .mutual-exclusive {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+        } */
+        .copy-btn {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        /* 新增移动端适配样式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                margin: 10px;
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            input[type="text"] {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+            }
+
+            .result {
+                padding: 15px;
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .copy-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            #logoCanvas {
+                margin: 0 0 15px 0;
+            }
+
+            .input-group input[type="text"],
+            .input-group select {
+                width: 100%;
+            }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px 15px;
+            }
+
+            #logoCanvas {
+                margin: 0 0 15px 0;
+                width: 80px;
+                height: 80px;
+            }
+
+            .company-name {
+                font-size: 18px;
+            }
+
+            .established {
+                font-size: 11px;
+            }
+
+            body {
+                font-size: 14px;
+            }
+
+            .input-group label {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 15px;
+                padding: 12px 24px;
+            }
+        }
+
+        /* 增强可读性 */
+        .result {
+            font-size: 15px;
+            color: #444444;
+            line-height: 1.8;
+        }
+
+        .error-msg {
+            font-size: 13px !important;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Canvas LOGO -->
+        <div class="header">
+            <canvas id="logoCanvas" width="100" height="100"></canvas>
+            <div class="company-info">
+                <h1>崴航（广州）国际货运代理有限公司</h1>
+                <small>SINCE 1905</small>
+            </div>
+        </div>
+        <div class="input-group"><label>国家：</label><input type="text" id="country"></div>
+        <div class="input-group">
+            <!-- <label>起运港：</label><input value="GUANGZHOU" type="text" id="origin"> -->
+            <label>起运港：</label>
+            <select id="origin" style="width: 223px;"> <!-- 将input改为select -->
+                <option value="GUANGZHOU">GUANGZHOU</option>
+                <option value="SHENZHEN">SHENZHEN</option>
+                <option value="HONGKONG">HONGKONG</option>
+                <option value="SHANGHAI">SHANGHAI</option>
+                <option value="NINGBO">NINGBO</option>
+                <option value="XIAMEN">XIAMEN</option>
+                <option value="DONGGUANG">DONGGUANG</option>
+                <option value="QINGDAO">QINGDAO</option>
+
+
+            </select>
+        </div>
+        <div class="input-group"><label>目的港：</label><input type="text" id="destination"></div>
+        <div class="input-group"><label>海运费：</label><input type="text" id="shippingCost"></div>
+        <div class="input-group"><label>大船截时间：</label><input value="X" type="text" id="bigshipDay_1"></div>
+        <div class="input-group"><label>大船开时间：</label><input value="X" type="text" id="bigshipDay_2"></div>
+        <div class="input-group"><label>时间：</label><input value="X" type="text" id="ETATime"></div>
+        <div class="input-group"><label>中转：</label><input type="text" id="transfer"></div>
+        <div class="input-group"><label>体积：</label><input type="text" id="volume"></div>
+
+        <div>
+            <label>报关方式：</label>
+            <label><input type="radio" id="customsDoc" name="customsType" value="customsDoc"> 有单证报关</label>
+            <label><input type="radio" id="buyDoc" name="customsType" value="buyDoc"> 买单证报关</label>
+            <input type="number" id="customsFeeInput" value="260">
+            <label class="error-msg" id="docError">* 必选</label>
+        </div>
+        <div class="mutual-exclusive" id="portSelection">
+            <label>对应仓库：</label>
+            <label><input type="checkbox" id="wuchong" name="port"> 乌冲</label>
+            <label><input type="checkbox" id="jiaoxin" name="port"> 滘心</label>
+        </div>
+        <div class="checkbox-group">
+            <label><input type="checkbox" id="docFee" checked> DOC:</label>
+            <label><input type="checkbox" id="cfsOption"> CFS</label> <!-- 新增CFS选项 -->
+            <label><input type="checkbox" id="ens"> ENS:</label>
+            <label><input type="checkbox" id="ics2"> ICS2:</label>
+            <label><input type="checkbox" id="ams"> AMS: </label>
+            <label><input type="checkbox" id="isf"> ISF: </label>
+            <label><input type="checkbox" id="afr"> AFR: </label>
+
+
+        </div>
+
+
+
+
+        <button onclick="generateResult()">查询</button>
+
+        <input type="hidden" id="daofu" value="true">
+        <input type="hidden" id="chuanSi" value="">
+        <input type="hidden" id="beizhu" value="">
+
+        <div class="result" id="result">
+
+        </div>
+        <button onclick="copyResult()" id="copyBtn" style="display:none;">复制结果</button>
+
+    </div>
+    <!-- 新增复制按钮 -->
+    </div>
+    </div>
+
+    <script>
+        // 绘制Canvas LOGO
+        const canvas = document.getElementById('logoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 绘制绿色背景
+        ctx.fillStyle = '#007F00';
+        ctx.fillRect(0, 0, 100, 100);
+
+        // 绘制白色文字
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 60px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('KF', 50, 50);
+
+        // 绘制边框
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 0, 100, 100);
+        // 新增港口选择监听
+        document.getElementById('origin').addEventListener('change', function () {
+            const isGuangzhou = this.value === 'GUANGZHOU';
+            // 控制港口选择框显示
+            document.getElementById('portSelection').style.display = isGuangzhou ? 'block' : 'none';
+
+            // 非广州时清空已选港口
+            if (!isGuangzhou) {
+                document.getElementById('wuchong').checked = false;
+                document.getElementById('jiaoxin').checked = false;
+            }
+        });
+        // 新增CFS自动勾选逻辑
+        document.getElementById('origin').addEventListener('change', function () {
+            const isShenzhen = this.value === 'SHENZHEN';
+            document.getElementById('cfsOption').checked = isShenzhen;
+            updateCustomsFee(); // 触发费用更新
+        });
+
+        // 新增报关费用更新函数
+        function updateCustomsFee() {
+            const origin = document.getElementById('origin').value;
+            const isShenzhen = origin === 'SHENZHEN';
+            const isNingbo = origin === 'NINGBO';
+            const isQingdao = origin === 'QINGDAO';
+            const selectedCustomsType = document.querySelector('input[name="customsType"]:checked')?.value;
+
+            // 处理宁波/青岛特殊报关规则
+            if (isNingbo || isQingdao) {
+                document.getElementById('customsFeeInput').value = isNingbo ? 120 : 60;
+                document.getElementById('customsDoc').checked = true;
+                document.getElementById('buyDoc').disabled = true;
+            } else {
+                document.getElementById('buyDoc').disabled = false;
+                // 处理其他港口报关费用
+                if (selectedCustomsType === 'customsDoc') {
+                    document.getElementById('customsFeeInput').value = isShenzhen ? 320 : 260;
+                } else if (selectedCustomsType === 'buyDoc') {
+                    document.getElementById('customsFeeInput').value = isShenzhen ? 520 : 200;
+                }
+            }
+            // 移动原外部的互斥逻辑到函数内
+            if (isNingbo || isQingdao) {
+                document.getElementById('customsDoc').checked = true;
+                document.getElementById('buyDoc').disabled = true;
+            } else {
+                document.getElementById('buyDoc').disabled = false;
+            }
+        }
+
+        // 国家通用方法
+        function countryFlete(con) {
+            console.log("Country input changed");
+            const countryValue = con.trim().toLowerCase();
+            console.log("Country value:", countryValue);
+
+            // 欧洲国家列表（小写）
+            const europeanCountries = [
+                '德国', '斯诺文尼亚', '克罗地亚', '瑞士', '挪威', '拉脱维亚',
+                '立陶宛', '爱沙尼亚', '波兰', '罗马尼亚', '保加利亚', '英国',
+                '捷克', '奥地利', '斯洛伐克', '匈牙利', '丹麦', '瑞典', '芬兰',
+                '法国', '荷兰', '葡萄牙', '格鲁吉亚', '亚美尼亚', '阿塞拜疆',
+                '冰岛', '比利时', '爱尔兰', '西班牙', '马耳他', '意大利', '以色列',
+                '塞浦路斯', '希腊', '土耳其', '乌克兰', '摩尔多瓦', '阿尔及利亚', '突尼斯',
+                'germany', 'slovenia', 'croatia', 'switzerland', 'norway', 'latvia',
+                'lithuania', 'estonia', 'poland', 'romania', 'bulgaria', 'united kingdom',
+                'czech republic', 'austria', 'slovakia', 'hungary', 'denmark', 'sweden', 'finland',
+                'france', 'netherlands', 'portugal', 'georgia', 'armenia', 'azerbaijan',
+                'iceland', 'belgium', 'ireland', 'spain', 'malta', 'italy', 'israel',
+                'cyprus', 'greece', 'turkey', 'ukraine', 'moldova', 'algeria', 'tunisia'
+            ];
+
+            // 美洲国家列表（小写）
+            const americanCountries = [
+                '夏威夷', '加拿大', '墨西哥', '多米尼加共和国', '巴哈马群岛',
+                '大开曼岛', '牙买加', '波多黎各', '特克斯和凯科斯群岛', '博内尔岛',
+                '圣基茨和尼维斯', '伯利兹城', '圣托马斯', '托尔托拉', '圣克罗伊岛',
+                '圣巴特岛', '百慕大群岛', '圣文森特和格林纳丁斯', '巴哈马群岛',
+                'hawaii', 'canada', 'mexico', 'dominican republic', 'bahamas',
+                'grand cayman', 'jamaica', 'puerto rico', 'turks and caicos islands', 'bonaire',
+                'saint kitts and nevis', 'belize city', 'saint thomas', 'tortola', 'saint croix',
+                'saint barthelemy', 'bermuda', 'saint vincent and the grenadines', 'bahamas'
+            ];
+
+            // 自动勾选逻辑
+            const isEurope = europeanCountries.some(c => countryValue.includes(c));
+            const isAmerica = americanCountries.some(c => countryValue.includes(c));
+            const isJapan = countryValue.includes('日本') || countryValue.includes('japan');
+
+            document.getElementById('ens').checked = isEurope;
+            document.getElementById('ics2').checked = isEurope;
+            document.getElementById('ams').checked = isAmerica;
+            document.getElementById('afr').checked = isJapan;
+        }
+
+        document.querySelectorAll('input[name="customsType"]').forEach(radio => {
+            radio.addEventListener('change', updateCustomsFee);
+        });
+        // 国家自动勾选逻辑
+        document.getElementById('country').addEventListener('input', function () {
+            countryFlete(this.value.trim().toLowerCase());
+        });
+
+        // 保持原有互斥复选框逻辑
+        document.querySelectorAll('input[name="port"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    document.querySelectorAll('input[name="port"]').forEach(other => {
+                        if (other !== e.target) other.checked = false;
+                    });
+                }
+            });
+        });
+
+
+        // 新增国家输入监听
+        document.getElementById('country').addEventListener('input', function () {
+            const isJapan = this.value.trim() === '日本';
+            document.getElementById('afr').checked = isJapan;
+        });
+
+        // 保持原有互斥复选框逻辑
+        document.querySelectorAll('input[name="port"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    document.querySelectorAll('input[name="port"]').forEach(other => {
+                        if (other !== e.target) other.checked = false;
+                    });
+                }
+            });
+        });
+        // 处理互斥复选框
+        document.querySelectorAll('input[name="port"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    document.querySelectorAll('input[name="port"]').forEach(other => {
+                        if (other !== e.target) other.checked = false;
+                    });
+                }
+            });
+        });
+        // 修改单证报关互斥逻辑
+        document.querySelectorAll('input[name="customsType"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('input[name="customsType"]').forEach(other => {
+                    if (other !== this) {
+                        other.checked = false;
+                    }
+                });
+                validateDocOptions();
+            });
+        });
+
+        const buyDocElement = document.getElementById('buyDoc');
+        if (buyDocElement) {
+            buyDocElement.addEventListener('change', function () {
+                if (this.checked) {
+                    document.getElementById('customsDoc').checked = false;
+                }
+                validateDocOptions();
+            });
+        }
+
+        // 修改验证函数
+        function validateDocOptions() {
+            const docError = document.getElementById('docError');
+            const customsTypeChecked = document.querySelector('input[name="customsType"]:checked');
+
+            if (!customsTypeChecked) {
+                docError.style.display = 'inline-block';
+                return false;
+            }
+            docError.style.display = 'none';
+            return true;
+        }
+
+        //查询功能
+        function generateResult() {
+            if (!validateDocOptions()) {
+                return alert('有单证和买单必须二选一！');
+            }
+
+            const portName = document.getElementById('destination').value.trim().toUpperCase();
+            const portInfo = portData[portName] || { name: portName };
+
+            // 获取体积数值
+            const volume = parseFloat(document.getElementById('volume').value);
+            if (isNaN(volume) || volume <= 0) {
+                return alert('请输入有效的体积数值');
+            }
+
+            // 获取选择的仓库类型
+            const warehouse = document.querySelector('input[name="port"]:checked')?.id;
+            console.log(warehouse)
+            let price = null;
+
+            // 获取到付、船司和备注值
+            const daofuValue = document.getElementById('daofu').value === 'true' ? '是' : '否';
+            const chuanSiValue = document.getElementById('chuanSi').value;
+            const beizhuValue = document.getElementById('beizhu').value;
+
+            // 根据仓库类型获取对应价格表
+            if (warehouse === 'wuchong' && portInfo.WCprice) {
+                price = getPriceByVolume(portInfo.WCprice, volume);
+            } else if (warehouse === 'jiaoxin' && portInfo.JXprice) {
+                price = getPriceByVolume(portInfo.JXprice, volume);
+            } else if (warehouse === 'beisha' && portInfo.BSprice) {
+                price = getPriceByVolume(portInfo.BSprice, volume);
+            }
+            // 添加辅助函数获取价格
+            function getPriceByVolume(priceObj, volume) {
+                for (const range in priceObj) {
+                    const [min, max] = range.split('-').map(Number);
+                    if (volume >= min && volume < max) {
+                        return priceObj[range];
+                    }
+                }
+                return null;
+            }
+            console.log(price, "price")
+
+
+            const country = document.getElementById('country').value;
+            const origin = document.getElementById('origin').value;
+            const isShenzhen = origin === 'SHENZHEN'; // 获取起运港值
+            const destination = document.getElementById('destination').value;
+            const shippingCost = document.getElementById('shippingCost').value;
+            const bigshipDay_1 = document.getElementById('bigshipDay_1').value;
+            const bigshipDay_2 = document.getElementById('bigshipDay_2').value;
+            const ETATime = document.getElementById('ETATime').value;
+            const transfer = document.getElementById('transfer').value;
+            // 从输入框获取报关费用
+            const customsFee = parseInt(document.getElementById('customsFeeInput').value);
+
+
+
+            // 动态费用设置
+            let docFee = 260;
+            let buyFee = 200;
+
+            if (isShenzhen) {
+                docFee = 320;  // 深圳有单证费用
+                buyFee = 520;  // 深圳买单费用
+            }
+
+            // 生成船期信息
+            // 获取起运港值
+            const isGuangzhou = origin === 'GUANGZHOU';
+
+            // 生成船期信息（仅广州显示）
+            let schedule = '';
+            if (isGuangzhou) {
+                if (document.getElementById('wuchong').checked) {
+                    schedule = `乌冲2截5开或者5截2开，大船${bigshipDay_1}截${bigshipDay_2}开，大船起步后预计${ETATime}天到。`;
+                } else if (document.getElementById('jiaoxin').checked) {
+                    schedule = `滘心2截4开或者4截1开，大船${bigshipDay_1}截${bigshipDay_2}开，大船起步后预计${ETATime}天到。`;
+                }
+            } else {
+                schedule = `大船${bigshipDay_1}截${bigshipDay_2}开，大船起步后预计${ETATime}天到。`;
+            }
+
+
+            // 中转信息
+            const transferInfo = transfer ? `经${transfer}中转` : '';
+
+            // 生成费用清单
+            let fees = [];
+            if (document.getElementById('docFee').checked) fees.push('DOC: RMB 200/BL');
+            if (document.getElementById('cfsOption').checked) fees.push('CFS: RMB 40/RT');
+            if (document.getElementById('ens').checked) fees.push('ENS: USD 25/BL');
+            if (document.getElementById('ics2').checked) fees.push('ICS2: USD 30/BL');
+            if (document.getElementById('ams').checked) fees.push('AMS: USD 25/BL');
+            if (document.getElementById('isf').checked) fees.push('ISF: USD 35/BL');
+            if (document.getElementById('afr').checked) fees.push('AFR: USD 30/BL');
+            const selectedCustomsType = document.querySelector('input[name="customsType"]:checked').value;
+            if (selectedCustomsType === 'customsDoc') {
+                fees.push(`有单证报关：RMB ${customsFee}/BL(六个品名内价格)`);
+                // 动态设置深圳报关费用
+                // if (origin === 'SHENZHEN') {
+                //     document.getElementById('customsFeeInput').value = customsFee === 60 ? '60' : '120';
+                // }
+            } else if (selectedCustomsType === 'buyDoc') {
+                fees.push(`买单证报关：RMB ${customsFee}/BL（无牌普货六个品名内）`);
+            }
+
+            // 构建结果时优化换行逻辑（关键修改）
+            const resultLines = [];
+
+            // 添加非空字段
+            if (country) resultLines.push(`国家：${country}`);
+            if (origin) resultLines.push(`起运港：${origin}`);
+            if (destination) resultLines.push(`目的港：${destination}`);
+
+            // 固定费用项（始终显示）
+            resultLines.push(`O/F：USD ${shippingCost ? shippingCost : price} /RT`);
+
+            // 费用清单处理
+            if (fees.length > 0) {
+                resultLines.push(fees.map(fee => `${fee}`).join('\n'));
+            }
+
+            // 船期处理
+            if (schedule) {
+                resultLines.push(`船期：${schedule} ${transferInfo}`);
+            }
+
+            // 合并结果并清理空白
+            let resultHTML = resultLines.join('\n').replace(/\n{3,}/g, '\n\n');
+
+            // 添加新输出项
+            resultHTML += `\n\n支持到付：${daofuValue}`;
+            resultHTML += `\n船司：${chuanSiValue}`;
+            resultHTML += `\n备注：${beizhuValue}`;
+
+            document.getElementById('copyBtn').style.display = 'block';
+            document.getElementById('result').innerHTML = resultHTML;
+
+        }
+
+
+
+
+        // 辅助函数：根据体积获取价格
+        function getPriceByVolume(priceObj, volume) {
+            for (const range in priceObj) {
+                const [min, max] = range.split('-').map(Number);
+                if (volume >= min && volume < max) {
+                    return priceObj[range];
+                }
+            }
+            return null;
+        }
+        // 优化后的移动端复制功能
+        function copyResult() {
+            const resultContent = document.getElementById('result').innerText;
+
+            // 清理连续换行和首尾空白
+            const cleanedText = resultContent
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+
+            // 创建临时textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = cleanedText;
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            // // const resultContent = document.getElementById('result').textContent;
+            const originalText = document.getElementById('copyBtn').textContent;
+            // const resultContent = document.getElementById('result').innerText;
+
+            // // 创建临时元素处理特殊格式（新增代码）
+            // const tempDiv = document.createElement('div');
+            // tempDiv.innerHTML = resultContent;
+
+            // // 手动处理列表项换行（新增代码）
+            // const processedText = Array.from(tempDiv.childNodes).map(node => {
+            //     if (node.nodeName === 'DIV') return node.textContent + '\n';
+            //     if (node.nodeName === 'BR') return '\n';
+            //     return node.textContent;
+            // }).join('');
+
+            // // 创建临时textarea（保持原有逻辑）
+            // const textarea = document.createElement('textarea');
+            // textarea.value = processedText;
+            // document.body.appendChild(textarea);
+            // textarea.select();
+
+            // 创建iOS专用剪贴板写入
+            function handleIOS() {
+                const textarea = document.createElement('textarea');
+                textarea.value = resultContent;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+
+                textarea.focus();
+                textarea.setSelectionRange(0, 9999);
+
+                try {
+                    document.execCommand('copy');
+                    showCopyStatus(true);
+                } catch (e) {
+                    showError('请手动选择文本复制');
+                }
+                document.body.removeChild(textarea);
+            }
+
+            // 通用复制逻辑
+            function handleGeneral() {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(resultContent)
+                        .then(() => showCopyStatus(true))
+                        .catch(handleIOS);
+                } else {
+                    handleIOS();
+                }
+            }
+
+            // 显示复制状态
+            function showCopyStatus(success) {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = success ? '已复制！' : originalText;
+                if (success) {
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.textContent = originalText;
+                    }, 1500);
+                }
+            }
+
+            // 错误处理
+            function showError(msg) {
+                alert(msg);
+                document.getElementById('copyBtn').textContent = originalText;
+            }
+
+            // 立即执行复制操作
+            handleGeneral();
+        }
+
+        // 移动端点击优化
+        document.addEventListener('touchstart', function (e) {
+            if (e.target.closest('#copyBtn')) {
+                e.preventDefault();
+                copyResult();
+            }
+        });
+
+        function fallbackCopy(textarea) {
+            try {
+                const success = document.execCommand('copy');
+                showCopySuccess(success);
+            } catch (err) {
+                showError('复制失败，请手动复制');
+            }
+        }
+
+        function showCopySuccess(success = true) {
+            const btn = document.getElementById('copyBtn');
+            btn.textContent = success ? '已复制！' : '复制失败';
+            setTimeout(() => {
+                btn.textContent = '复制结果';
+            }, 1500);
+        }
+
+        function showError(msg) {
+            alert(msg);
+            const btn = document.getElementById('copyBtn');
+            btn.textContent = '复制结果';
+        }
+
+
+        // 新增移动端点击事件优化
+        document.addEventListener('touchstart', function (e) {
+            // 防止移动端点击延迟
+            if (e.target.tagName === 'BUTTON') {
+                e.preventDefault();
+                setTimeout(() => e.target.click(), 0);
+            }
+        });
+        // 页面加载时初始化显示状态
+        window.onload = function () {
+            document.getElementById('portSelection').style.display =
+                document.getElementById('origin').value === 'GUANGZHOU' ? 'block' : 'none';
+        };
+
+        // 添加目的港输入监听
+        document.getElementById('destination').addEventListener('input', function () {
+            const portName = this.value.trim().toUpperCase();
+            if (portData[portName]) {
+                const portInfo = portData[portName];
+                document.getElementById('country').value = portInfo.country;
+                countryFlete(portInfo.country);
+                // 处理中转港口显示
+                if (portInfo.VIA) {
+                    document.getElementById('transfer').value = portInfo.VIA;
+                } else {
+                    document.getElementById('transfer').value = '';
+                }
+
+                // 处理时间显示
+                if (portInfo.VIA && portData[portInfo.VIA]) {
+                    const viaPort = portData[portInfo.VIA];
+                    document.getElementById('bigshipDay_1').value = viaPort.ETD || 'X';
+                    document.getElementById('bigshipDay_2').value = viaPort.ETA || 'X';
+
+                    // 新增arrivalTime处理逻辑
+                    let arrivalTime = portInfo.arrivalTime;
+                    if (typeof arrivalTime === 'string' && arrivalTime.includes('+')) {
+                        const daysToAdd = parseInt(arrivalTime.replace('+', ''));
+                        arrivalTime = parseInt(viaPort.arrivalTime) + 7 + daysToAdd;
+                    }
+                    document.getElementById('ETATime').value = arrivalTime || 'X';
+                } else {
+                    document.getElementById('bigshipDay_1').value = portInfo.ETD || 'X';
+                    document.getElementById('bigshipDay_2').value = portInfo.ETA || 'X';
+                    document.getElementById('ETATime').value = portInfo.arrivalTime || 'X';
+                }
+
+                // 新增赋值逻辑
+                document.getElementById('daofu').value = portInfo.cashOnDelivery || '';
+                document.getElementById('chuanSi').value = portInfo.shipName || '';
+
+                // 处理备注显示
+                let notesValue = portInfo.notes || '';
+                if (portInfo.VIA && portData[portInfo.VIA] && portData[portInfo.VIA].notes) {
+                    notesValue = portData[portInfo.VIA].notes + ' ' + notesValue;
+                }
+                document.getElementById('beizhu').value = notesValue;
+
+            }
+        });
+        // 添加目的港输入框事件监听
+        document.getElementById('destination').addEventListener('input', function () {
+            try {
+                const portName = this.value.trim().toUpperCase();
+                if (portData[portName]) {
+                    document.getElementById('country').value = portData[portName].country;
+                }
+            } catch (e) {
+                console.error('港口查询出错:', e);
+            }
+        });
+
+
+        // 
+        const tenVol = "0-10"
+        const notPrice = { [tenVol]: null }
+        const portData = {
+
+            /* -----------------------------新加披----------------------------------*/
+
+            // 新加坡
+            "SINGAPORE": {
+                country: "SINGAPORE",
+                WCprice: {
+                    "0-1": -190,
+                    "1-3": -135,
+                    "3-5": -110,
+                    "5-10": -85,
+                    "10-99": "case by case",
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: 2,
+                ETA: 4,
+                arrivalTime: 4,
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `
+"1.所有经过SIN中转的港口,长度不能超过4.9米,宽度和高度不能超过1.9米, 单件货物不能超过2.4吨                  
+ 2.体积大于10CBM(含10CBM)要case by case 询价，代理会加价，包括中转的港口          
+3.VIA SIN中转的点，10--15CBM的,运费要加USD5/RT。  15--20CBM,运费要加USD10/RT,以此类推。超过20cbm要case by case询价。"
+`
+            },
+
+            /* -----------------------------泰国----------------------------------*/
+
+            // 曼谷
+            "BANGKOK": {
+                country: "THAILAND",
+                WCprice: {
+                    [tenVol]: 20
+                },
+                BSprice: {
+                    [tenVol]: 25
+                },
+                JXprice: {
+
+                    "0-1": -95,
+                    "1-3": -80,
+                    "3-5": -70,
+                    "5-10": -85,
+                    ROTTERDAM: -65,
+                    "15-99": -60
+                },
+
+                VIA: "",
+                ETD: 4,
+                ETA: 6,
+                arrivalTime: 5,
+                cashOnDelivery: true,
+                shipName: "SINOKOR/WHL",
+                notes: `
+1. 薰蒸
+2. 货物外箱以及提单上都必须要有唛头标志，不允许NO MARK ! 否则将有高额罚款
+3. 单件货物超过2.5吨目的港仓库无法装卸`
+            },
+
+
+            // 林查班 
+            "LAEM CHABANG": {
+                country: "THAILAND",
+                WCprice: {
+                    [tenVol]: 5
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `
+1. 薰蒸
+2. 货物外箱以及提单上都必须要有唛头标志，不允许NO MARK ! 否则将有高额罚款
+3. 单件货物超过2.5吨目的港仓库无法装卸`
+            },
+
+            // 拉特克拉邦
+            "LAT KRABANG": {
+                country: "THAILAND",
+                WCprice: {
+                    [tenVol]: 5
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `
+1. 薰蒸
+2. 货物外箱以及提单上都必须要有唛头标志，不允许NO MARK ! 否则将有高额罚款
+3. 单件货物超过2.5吨目的港仓库无法装卸`
+            },
+
+
+
+            /* -----------------------------菲律宾----------------------------------*/
+
+            // 马尼拉
+            "MANILA": {
+                country: "PHILIPPINES",
+                WCprice: {
+                    "0-1": -235,
+                    "1-3": -225,
+                    "3-5": -190,
+                    "5-10": -155
+                },
+                BSprice: {
+                    "0-1": -230,
+                    "1-3": -220,
+                    "3-5": -185,
+                    "5-10": -150
+                },
+
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 5,
+                ETA: 7,
+                arrivalTime: 4,
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `
+        1/熏蒸
+2/必须有进口权才能清关（不能私人收货），如开不起直拼就VIA HK，按VIA HK 价格
+3/货物外包装必须有唛头，并且唛头信息建议还应包括" 实际发货人和收货人名字以及原产地“ 这些资料的英文信息`
+            },
+
+            // DAVAO
+            "DAVAO": {
+                country: "PHILIPPINES",
+                WCprice: {
+                    [tenVol]: 165
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+11",
+                cashOnDelivery: false,
+                shipName: "WHL",
+                notes: `中转港2周一班船，只开小柜`
+            },
+
+            // 宿务
+            "CEBU": {
+                country: "PHILIPPINES",
+                WCprice: {
+                    [tenVol]: 0
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+9",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `中转港2周一班船，只开小柜`
+            },
+
+            /* -----------------------------越南----------------------------------*/
+            // 海防
+            "HAIPHONG": {
+                country: "VIETNAM",
+                WCprice: {
+                    [tenVol]: 3
+                },
+                BSprice: {
+                    [tenVol]: 8
+                },
+                JXprice: {
+                    "0-1": -42,
+                    "1-3": -37,
+                    "3-5": -32,
+                    "5-10": -27
+                },
+                VIA: "",
+                ETD: 1,
+                ETA: 2,
+                arrivalTime: 3,
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `"1/提供收货人税号, 必须有进口权才能清关 熏蒸 
+2/越南海关最近在进口货物的标签规范问题上加强了监管，请提醒客户，原产地信息如“MADE IN CHINA” 应该在产品本身或内外包装上都要有明显/规范的体现，特别是机器类产品。否则一旦被海关查验，将面临着不定额罚款。"		`
+            },
+
+            // 胡志明
+            "HOCHIMINH": {
+                country: "VIETNAM",
+                WCprice: {
+                    [tenVol]: 5
+                },
+                BSprice: {
+                    [tenVol]: 10
+                },
+                JXprice: {
+                    "0-1": -39,
+                    "1-3": -34,
+                    "3-5": -29,
+                    "5-10": -24
+                },
+                VIA: "",
+                ETD: 7,
+                ETA: 1,
+                arrivalTime: 5,
+                cashOnDelivery: true,
+                shipName: "WHL/SINOKOR",
+                notes: `"1/提供收货人税号, 必须有进口权才能清关 熏蒸 
+2/ 越南海关最近在进口货物的标签规范问题上加强了监管，请提醒客户，原产地信息如“MADE IN CHINA” 应该在产品本身或内外包装上都要有明显/规范的体现，特别是机器类产品。否则一旦被海关查验，将面临着不定额罚款。"		`
+            },
+
+
+            // 岘港
+            "DANANG": {
+                country: "VIETNAM",
+                WCprice: {
+                    [tenVol]: 35
+                },
+                BSprice: {
+                    [tenVol]: 40
+                },
+                JXprice: {
+                    [tenVol]: 35
+
+                },
+                VIA: "",
+                ETD: 1,
+                ETA: 3,
+                arrivalTime: 2,
+                cashOnDelivery: true,
+                shipName: "SITC",
+                notes: `"1/熏蒸,,香港直拼
+2/必须有进口权才能清关,提供收货人税号"`},
+            /* -----------------------------印度尼西亚----------------------------------*/
+            // 雅加达
+            "YAKARTA": {
+                country: "INDONESIA",
+                WCprice: {
+                    "0-1": -229,
+                    "1-3": -184,
+                    "3-10": -169
+                },
+                BSprice: {
+                    [tenVol]: -164
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 2,
+                ETA: 4,
+                arrivalTime: 6,
+                cashOnDelivery: true,
+                shipName: "WHL/SINOKOR",
+                notes: `"1/薰蒸
+2/必须有进口权才能清关 （收货人不能是私人）
+3/如开不起直拼就VIA HK，按VIA HK 价格`},
+
+            // 巴拉望
+            "BELAWAN": {
+                country: "INDONESIA",
+                WCprice: {
+                    [tenVol]: -25
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `只开小柜`
+            },
+
+            //三宝垄
+            "SEMARANG": {
+                country: "INDONESIA",
+                WCprice: {
+                    "0-1": -80,
+                    "1-3": -10,
+                    "3-10": 20
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: ""
+            },
+
+            //泗水
+            "SURABAYA": {
+                country: "INDONESIA",
+                WCprice: {
+                    "0-1": -80,
+                    "1-3": -10,
+                    "3-10": 5
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: ""
+            },
+            /* -----------------------------马来西亚----------------------------------*/
+            //巴生港
+            "PORT KLANG": {
+                country: "MALAYSIA",
+                WCprice: {
+                    [tenVol]: 60
+                },
+                BSprice: { [tenVol]: 65 },
+                JXprice: {
+                    "0-1": -15,
+                    "1-3": -0,
+                    "3-5": -8,
+                    "5-10": -10,
+                },
+                VIA: "",
+                ETD: "5",
+                ETA: "7",
+                arrivalTime: "5",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `薰蒸
+目的港不能高收
+不收私人物品`},
+
+            //亚庇哥打基
+            "KOTA KINABALU": {
+                country: "MALAYSIA",
+                WCprice: {
+                    [tenVol]: 55
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: "请留意SIN注意事项,SIN两周一水船"
+            },
+
+            //古晋
+            "KUCHING": {
+                country: "MALAYSIA",
+                WCprice: {
+                    [tenVol]: 60
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: "请留意SIN注意事项,SIN两周一水船"
+            },
+
+            //槟城
+            "PENANG": {
+                country: "MALAYSIA",
+                WCprice: {
+                    [tenVol]: 22
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: "请留意SIN注意事项"
+            },
+
+            //古晋
+            "PASIR GUDANG": {
+                country: "MALAYSIA",
+                WCprice: {
+                    [tenVol]: 15
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: "请留意SIN注意事项,SIN两周一水船"
+            },
+
+
+            //古晋
+            "JOHOR": {
+                country: "MALAYSIA",
+                WCprice: {
+                    [tenVol]: 15
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: "请留意SIN注意事项,SIN两周一水船"
+            },
+
+            //古晋
+            "SIBO": {
+                country: "MALAYSIA",
+                WCprice: {
+                    [tenVol]: 70
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: "请留意SIN注意事项,SIN两周一水船"
+            },
+
+
+            /* -----------------------------缅甸----------------------------------*/
+            //仰光
+            "YANGON": {
+                country: "BURMA",
+                WCprice: {
+                    [tenVol]: 65
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+5",
+                cashOnDelivery: false,
+                shipName: "WHL",
+                notes: "中转只开小柜，目的港无法扣货"
+            },
+            /* -----------------------------文莱----------------------------------*/
+            //文莱      
+            "MUARA": {
+                country: "BRUNEI",
+                WCprice: {
+                    [tenVol]: 60
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: ""
+            },
+
+
+            /* -----------------------------柬埔寨----------------------------------*/
+            // SIHANOUKVILLE
+            "SIHANOUKVILLE": {
+                country: "CAMBODIA",
+                WCprice: {
+                    [tenVol]: 35
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: "不接食品，化学品，宗教书籍，医疗用品及设备，电子设备"
+            },
+
+            "PHNOM PENH": {
+                country: "CAMBODIA",
+                WCprice: {
+                    [tenVol]: 45
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: "二程经SIHANOUKVILLE中转，单件货重量超过300KGS需单独问价"
+            },
+            /* -----------------------------韩国----------------------------------*/
+            "BUSAN": {
+                country: "KOREA",
+                WCprice: {
+                    "0-3": -53,
+                    "3-10": -50,
+                },
+                BSprice: { [tenVol]: 3 },
+                JXprice: { [tenVol]: -2 },
+                VIA: "",
+                ETD: "5",
+                ETA: "2",
+                arrivalTime: "6",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `1/薰蒸，必须有进口权才能清关，私人物品需跟OP确认目的港是否能提货后才能接
+2/需要每一件货都贴上原产地，如MADE IN CHINA.
+3/不收食品
+4/长不能超5.8米，宽2.2米，高2.2米， 单件不能超3吨。`
+            },
+
+            "INCHEON": {
+                country: "KOREA",
+                WCprice: {
+                    "0-3": -35,
+                    "3-10": -30,
+                },
+                BSprice: { [tenVol]: 23 },
+                JXprice: { [tenVol]: 18 },
+                VIA: "",
+                ETD: "5",
+                ETA: "2",
+                arrivalTime: "6",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `1/薰蒸，必须有进口权才能清关，私人物品需跟OP确认目的港是否能提货后才能接
+2/需要每一件货都贴上原产地，如MADE IN CHINA.
+3/不收种子`
+            },
+
+            "INCHON": {
+                country: "KOREA",
+                WCprice: {
+                    "0-3": -35,
+                    "3-10": -30,
+                },
+                BSprice: { [tenVol]: 23 },
+                JXprice: { [tenVol]: 18 },
+                VIA: "",
+                ETD: "5",
+                ETA: "2",
+                arrivalTime: "6",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `1/薰蒸，必须有进口权才能清关，私人物品需跟OP确认目的港是否能提货后才能接
+2/需要每一件货都贴上原产地，如MADE IN CHINA.
+3/不收种子`
+            },
+            /* -----------------------------台湾----------------------------------*/
+
+            "KEELUNG": {
+                country: "TAIWAN",
+                WCprice: {
+                    [tenVol]: 16
+                },
+                BSprice: { [tenVol]: 25 },
+                JXprice: {
+                    "0-1": -10,
+                    "1-3": -2,
+                    "3-5": 3,
+                    "5-10": 6,
+                },
+                VIA: "",
+                ETD: "5",
+                ETA: "1",
+                arrivalTime: "2",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `1.薰蒸  
+2.货物外包装一定要有统一唛头，且须与提单一致,否则会有罚款
+3.如开不起直拼就VIA HK，按VIA HK 价格`
+            },
+
+            "TAICHUNG": {
+                country: "TAIWAN",
+                WCprice: {
+                    [tenVol]: 16
+                },
+                BSprice: { [tenVol]: 25 },
+                JXprice: {
+                    "0-1": -10,
+                    "1-3": -2,
+                    "3-5": 3,
+                    "5-10": 6,
+                },
+                VIA: "",
+                ETD: "5",
+                ETA: "1",
+                arrivalTime: "2",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `1.薰蒸  
+2.货物外包装一定要有统一唛头，且须与提单一致,否则会有罚款
+3.如开不起直拼就VIA HK，按VIA HK 价格`
+            },
+
+            "KAOHSIUNG": {
+                country: "TAIWAN",
+                WCprice: {
+                    [tenVol]: 16
+                },
+                BSprice: { [tenVol]: 25 },
+                JXprice: {
+                    "0-1": -10,
+                    "1-3": -2,
+                    "3-5": 3,
+                    "5-10": 6,
+                },
+                VIA: "",
+                ETD: "5",
+                ETA: "1",
+                arrivalTime: "2",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `1.薰蒸  
+2.货物外包装一定要有统一唛头，且须与提单一致,否则会有罚款
+3.如开不起直拼就VIA HK，按VIA HK 价格`
+            },
+
+
+            /* -----------------------------日本----------------------------------*/
+
+            "TOKYO": {
+                country: "JAPAN",
+                WCprice: {
+                    "0-2": -135,
+                    "2-5": -115,
+                    "5-10": -105,
+                    ROTTERDAM: -100,
+                },
+                BSprice: {
+                    "0-2": -130,
+                    "2-5": -110,
+                    "5-10": -100,
+                    ROTTERDAM: -95,
+                },  // 10
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "5",
+                ETA: "4",
+                arrivalTime: "4",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `1. 薰蒸
+2. AFR：USD30/BL 
+3. 收货人不可以是私人
+4.货物是植物类的，要跟代理查询后再安排
+5.木箱或木托必须有叉脚，以便叉车装卸`
+            },
+
+            get YOKOHAMA() { return this.TOKYO; },
+            get OSAKA() { return this.TOKYO; },
+            get KOBE() { return this.TOKYO; },
+            get NAGOYA() { return this.TOKYO; },
+
+
+            "HAKATA"
+                : {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 30,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "FUKUYAMA": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "HIROSHIMA": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+
+            "IMABARI": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "KUMAMOTO": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 70,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR,需预付：DOCS：USD30/BLR`
+            },
+
+            "KANAZAWA": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "MIZUSHIMA": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "MOJI": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `熏蒸,+AFR,香港直拼`
+            },
+
+            "NIIGATA": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "SENDAI": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 50,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR，需预付：DOCS：USD30/BL`
+            },
+
+            "SHIMIZU": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 50,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR，香港直拼`
+            },
+
+            "SHIMONOSEKI": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 50,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR，需预付：DOCS：USD30/BL`
+            },
+
+            "TAKAMATSU": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "TOMAKOMAI": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "TOYAMASHINKO": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "MATSUYAMA": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+
+            "TSURUGA": {
+                country: "JAPAN",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,  // 10
+                JXprice: notPrice,
+                VIA: "BUSAN",
+                ETD: "BUSAN",
+                ETA: "BUSAN",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "TSL",
+                notes: `薰蒸,+AFR`
+            },
+            /* -----------------------------阿联酋----------------------------------*/
+            "DUBAI": {
+                country: "UAE",
+                WCprice: {
+                    "0-1": -158,
+                    "1-3": -138,
+                    "3-5": -118,
+                    "5-10": -113,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: 1,
+                ETA: 3,
+                arrivalTime: "25",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1/薰蒸， 不收危品
+2/长:5.8米,高:2.5米,单件重2.5吨, 整票不能超8吨，会有额外费用,CASE BY CASE咨询         
+3/自ETA 2023 年2月1日起，所有进口到阿联酋价值超过AED10,000的货物，申报进口清关前必须提交由阿联酋外交部（MoFAIC）认证过后的发票和原产地证书。进口商可通过MoFAIC的网站系统完成在线数字认证。"  `
+            },
+
+            get JEBEL() { return this.DUBAI; },
+
+            "ABU DHABI": {
+                country: "UAE",
+                WCprice: { [tenVol]: -58 },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            "SHARJAH": {
+                country: "UAE",
+                WCprice: { [tenVol]: -58 },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+            /* -----------------------------也门----------------------------------*/
+            "ADEN": {
+                country: "YEMEN",
+                WCprice: {
+                    [tenVol]: 177,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+30",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: `1/中转港四周1班船,薰蒸
+2/不收食品/危品//车辆/车辆(汽车)备件,机动车类、化肥类、化工类产品
+3/不能高收目的港费用，不能到付海运费
+4/单票超10cbm或重量超5吨，需提前跟代理确认额外费用`},
+            /* -----------------------------约旦----------------------------------*/
+            "AQABA": {
+                country: "JORDAN",
+                WCprice: {
+                    [tenVol]: -23,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+14",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1.中转港两周1班船,薰蒸，不收危品
+2.单件重2.5吨, 整票不能超8吨，会有额外费用 `},
+            /* -----------------------------巴林----------------------------------*/
+            "BAHRAIN": {
+                country: "BAHRAIN",
+                WCprice: {
+                    "0-1": -75,
+                    "1-3": -70,
+                    "3-10": -65,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1/薰蒸,单件重2.5吨,整票不能超8吨,有额外费用     
+2/不收危品`},
+            /* -----------------------------科威特----------------------------------*/
+            "KUWAIT": {
+                country: "KUWAIT",
+                WCprice: {
+                    "0-1": -85,
+                    "1-3": -80,
+                    "3-10": -75,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 需要每一件货都贴上原产地，如MADE IN CHINA,
+2. 薰蒸, 打托
+3.单件重2.5吨, 整票不能超8吨，会有额外费用   
+4.不收危品`},
+
+            get SHUWAIKH() { return this.KUWAIT; },
+
+            /* -----------------------------伊朗----------------------------------*/
+
+            "ABBAS": {
+                country: "IRAN",
+                WCprice: {
+                    "1-10": 73,
+                    "10-20": 78,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+1",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: `1.不收危品/有毒物品/电池/油/放射性物质/酒精/移动电源/发动机/发电机。
+2.收货人必须显示完整的资料 ，显示8位H.S Code .  薰蒸
+3.单件重3吨, 整票不能超5吨或10cbm，需提前跟代理确认额外费用
+4.对于化学品和外交货物，必须事先提供MSDS&HS代码进行检查
+5.不能预付和高收目的港费用，运费到付要显示金额在提单`
+            },
+            /* -----------------------------卡塔尔----------------------------------*/
+
+            "HAMAD": {
+                country: "QATAR",
+                WCprice: {
+                    "0-1": -85,
+                    "1-3": -80,
+                    "3-10": -75,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1.外包装必须印原产地
+2.单件重2.5吨, 整票不能超8吨，会有额外费用 
+3.若有任何的LCL化学品，药品经DUBAI中转，将在目的港仓库加收Handling Fees  AED 30 W/M (USD 8.15 APPROX)                          
+4.不接食品，危险品， 薰蒸`},
+
+            get DOHRA() { return this.HAMAD; },
+
+
+            /* -----------------------------沙特----------------------------------*/
+            "DAMMAM": {
+                country: "SAUDI ARABIA",
+                WCprice: {
+                    "0-1": -83,
+                    "1-3": -78,
+                    "3-10": -73,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1.每件货物的外包装都要贴有Made in China 及唛头标志且确保清晰
+3. 单件重2.5吨, 会有额外费用 , 不接危险品，要薰蒸,
+4.收货人或通知人是货运代理人，必须取得当地公共运输部门的许可证，才能正常清关提货
+5.提单需提供收货人VAT NO./ CR NO. / IMPORTER CODE,清关时N收货人必须填写CR CODE及IMPORTER CODE
+6. RIYADH 不收化工品
+7. 从 2025 年1月1日起，沙特 Saudi Arabia海关将严格执行并要求所有货物都必须携带由Saber 平台颁发的 产品合格证书（PCoC）和装运合格证书（SCoC）才可进口，到港前没有这些必要认证的货物而产生罚款、滞留或滞期费问题，将由进口商承担全部责任。`
+
+            },
+
+            "RIYADH": {
+                country: "SAUDI ARABIA",
+                WCprice: {
+                    "0-1": -70,
+                    "1-3": -65,
+                    "3-10": -60,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1.打托，每件货物的外包装都要贴有Made in China 及唛头标志且确保清晰
+3. 单件重2.5吨, 会有额外费用 , 不接危险品，要薰蒸,
+4.收货人或通知人是货运代理人，必须取得当地公共运输部门的许可证，才能正常清关提货
+5.提单需提供收货人VAT NO./ CR NO. / IMPORTER CODE,清关时N收货人必须填写CR CODE及IMPORTER CODE
+6. RIYADH 不收化工品
+7. 从 2025 年1月1日起，沙特 Saudi Arabia海关将严格执行并要求所有货物都必须携带由Saber 平台颁发的 产品合格证书（PCoC）和装运合格证书（SCoC）才可进口，到港前没有这些必要认证的货物而产生罚款、滞留或滞期费问题，将由进口商承担全部责任。`
+
+            },
+
+            "JEDDAH ": {
+                country: "SAUDI ARABIA",
+                WCprice: {
+                    "0-1": -70,
+                    "1-3": -65,
+                    "3-10": -60,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1.每件货物的外包装都要贴有Made in China 及唛头标志且确保清晰
+3. 单件重2.5吨, 会有额外费用 , 不接危险品，要薰蒸,
+4.收货人或通知人是货运代理人，必须取得当地公共运输部门的许可证，才能正常清关提货
+5.提单需提供收货人VAT NO./ CR NO. / IMPORTER CODE,清关时N收货人必须填写CR CODE及IMPORTER CODE
+6. RIYADH 不收化工品
+7. 从 2025 年1月1日起，沙特 Saudi Arabia海关将严格执行并要求所有货物都必须携带由Saber 平台颁发的 产品合格证书（PCoC）和装运合格证书（SCoC）才可进口，到港前没有这些必要认证的货物而产生罚款、滞留或滞期费问题，将由进口商承担全部责任。`
+
+            },
+            /* -----------------------------阿曼----------------------------------*/
+            "SOHAR": {
+                country: "OMAN",
+                WCprice: {
+                    "0-1": -65,
+                    "1-3": -60,
+                    "3-10": -55,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `薰蒸, 单件重2.5吨,整票不能超5吨,有额外费用 ，不收危品 `
+            },
+            /* -----------------------------苏丹----------------------------------*/
+            "SUDAN": {
+                country: "SUUDAN",
+                WCprice: {
+                    [tenVol]: 183
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "DUBAI",
+                ETD: "DUBAI",
+                ETA: "DUBAI",
+                arrivalTime: "+40",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: `1. 含PSS&BAF，目的港不能高收和到付海运费，中转港四周1班船
+2. 根据Sudan海关的规定，所有到port Sudan的货载，货物外包装上必须贴有唛头，不然目的港就产生罚金。
+3. 薰蒸，不收危品
+4.单票重量超5吨或超10cbm，需提前跟代理确认额外费用. `
+            },
+            /* -----------------------------孟加拉----------------------------------*/
+
+            "CHITTAGONG": {
+                country: "BANGLADESH",
+                WCprice: {
+                    [tenVol]: 55,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: 4,
+                ETA: 1,
+                arrivalTime: "23",
+                cashOnDelivery: true,
+                shipName: "OOCL",
+                notes: `当地不接受扣货，不能高收
+国外要求货物要打托，提单唛头要和实际一致`
+            },
+
+            get CHATTOGRAM() { return this.CHITTAGONG; },
+            /* -----------------------------斯里兰卡----------------------------------*/
+            "COLOMBO": {
+                country: "SRI LANKA",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: 4,
+                ETA: 7,
+                arrivalTime: "15",
+                cashOnDelivery: true,
+                shipName: "OOCL/COSCO",
+                notes: `1.不能高收 
+2.提单要显示HS CODE`
+            },
+            /* -----------------------------马尔代夫----------------------------------*/
+
+            "MALE": {
+                country: "MALDIVES",
+                WCprice: {
+                    [tenVol]: 113,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "COLOMBO",
+                ETD: "COLOMBO",
+                ETA: "COLOMBO",
+                arrivalTime: "+2",
+                cashOnDelivery: false,
+                shipName: "OOCL/COSCO",
+                notes: `要有进口权才可以清关`
+            },
+            /* -----------------------------巴基斯坦----------------------------------*/
+            "KARACHI": {
+                country: "PAKISTAN",
+                WCprice: {
+                    "0-1": -110,
+                    "1-3": -95,
+                    "3-10": -85,
+                    "10-99": -75
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: 2,
+                ETA: 5,
+                arrivalTime: "13",
+                cashOnDelivery: true,
+                shipName: "OOCL",
+                notes: `请务必要贴PL&CI 在其中一件外包装上,.   不接私人物品，收货公司名称要有进口权才能清关`
+            },
+
+            /* -----------------------------德国----------------------------------*/
+            "HAMBURG": {
+                country: "GERMANY",
+                WCprice: {
+                    "0-1": -170,
+                    "1-3": -162,
+                    "3-7": -151,
+                    "7-10": -137,
+                },
+                BSprice: {
+                    "0-1": -136,
+                    "1-3": -126,
+                    "3-7": -101,
+                    "7-10": -96,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 5,
+                ETA: 4,
+                arrivalTime: 42,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            "AACHEN": {
+                country: "GERMANY",
+                WCprice: {
+                    [tenVol]: -55,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            "AUGSBURG": {
+                country: "GERMANY",
+                WCprice: {
+                    [tenVol]: -55,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            get BERLIN() { return this.AACHEN; },
+            get BREMEN() { return this.AACHEN; },
+            get BREMERHAVEN() { return this.AACHEN; },
+            get COLOGNE() { return this.AACHEN; },
+            get DORTMUND() { return this.AACHEN; },
+            get DUSSELDORF() { return this.AACHEN; },
+            get DUISBURG() { return this.AACHEN; },
+            get FRANKFURT() { return this.AACHEN; },
+            get MAIN() { return this.AACHEN; },
+            get HAGEN() { return this.AACHEN; },
+            get HANNOVER() { return this.AACHEN; },
+            get KOLN() { return this.AACHEN; },
+            get LUDWIGSHAFEN() { return this.AACHEN; },
+            get MUNICH() { return this.AACHEN; },
+            get NUREMBERG() { return this.AACHEN; },
+            get OLDENBURG() { return this.AACHEN; },
+            get STUTTGART() { return this.AACHEN; },
+            get WURZBURG() { return this.AACHEN; },
+            get WUPPERTAL() { return this.AACHEN; },
+            /* -----------------------------斯洛文尼亚----------------------------------*/
+
+            "KOPER": {
+                country: "SLOVENIA",
+                WCprice: {
+                    [tenVol]: -3,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+            /* -----------------------------克罗地亚----------------------------------*/
+
+            "RIJEKA": {
+                country: "CROATIA",
+                WCprice: {
+                    [tenVol]: 81,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            "ZAGREB": {
+                country: "CROATIA",
+                WCprice: {
+                    [tenVol]: 69,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+            /* -----------------------------瑞士----------------------------------*/
+            "BASEL": {
+                country: "SWITZERLAND",
+                WCprice: {
+                    [tenVol]: -10,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            "BERN": {
+                country: "SWITZERLAND",
+                WCprice: {
+                    [tenVol]: -3,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            "GENEVA": {
+                country: "SWITZERLAND",
+                WCprice: {
+                    [tenVol]: -3,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            "ZURICH": {
+                country: "SWITZERLAND",
+                WCprice: {
+                    [tenVol]: -10,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+10",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            /* -----------------------------挪威----------------------------------*/
+
+            "OSLO": {
+                country: "NORWAY",
+                WCprice: {
+                    [tenVol]: -5,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: 3,
+                ETA: 5,
+                arrivalTime: "33",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+            /* -----------------------------拉脱维亚----------------------------------*/
+
+            "RIGA": {
+                country: "LATVIA",
+                WCprice: {
+                    [tenVol]: 21,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1 收ENS:USD25/SET +ICS: USD30/SET;  
+2,中转货物,必须提供装箱单及发票以便签发转运文件`
+            },
+            /* -----------------------------立陶宛----------------------------------*/
+
+            "VILNIUS": {
+                country: "LITHUANIA",
+                WCprice: {
+                    [tenVol]: 13,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1 收ENS:USD25/SET +ICS: USD30/SET;  
+2,中转货物,必须提供装箱单及发票以便签发转运文件`},
+
+            "KAUNAS": {
+                country: "LITHUANIA",
+                WCprice: {
+                    [tenVol]: 13,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+15",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1 收ENS:USD25/SET +ICS: USD30/SET;  
+2,中转货物,必须提供装箱单及发票以便签发转运文件`},
+
+            "KLAIPEDA": {
+                country: "LITHUANIA",
+                WCprice: {
+                    [tenVol]: 13,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+15",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1 收ENS:USD25/SET +ICS: USD30/SET;  
+2,中转货物,必须提供装箱单及发票以便签发转运文件`},
+            /* -----------------------------爱沙尼亚----------------------------------*/
+            "TALLINN": {
+                country: "ESTONIA",
+                WCprice: {
+                    [tenVol]: 18,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1 收ENS:USD25/SET +ICS: USD30/SET;  
+2,中转货物,必须提供装箱单及发票以便签发转运文件`},
+
+
+            /* -----------------------------波兰----------------------------------*/
+            "GDANSK": {
+                country: "POLAND",
+                WCprice: {
+                    "0-1": -221,
+                    "1-3": -201,
+                    "3-5": -171,
+                    "5-10": -126,
+                    "10-99": -121
+                },
+                BSprice: {
+                    "0-1": -224,
+                    "1-3": -194,
+                    "3-5": -164,
+                    "5-10": -119,
+                    "10-99": -114
+                },
+                JXprice: notPrice,
+                VIA: "",
+                ETD: 5,
+                ETA: 4,
+                arrivalTime: "45",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET;`
+            },
+
+
+            "GDYNIA": {
+                country: "POLAND",
+                WCprice: {
+                    [tenVol]: -118,
+                },
+                BSprice: { [tenVol]: -111 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GDANSK",
+                ETD: "GDANSK",
+                ETA: "GDANSK",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET;`
+            },
+            /* -----------------------------罗马尼亚----------------------------------*/
+
+            "CONSTANTZA": {
+                country: "ROMANIA",
+                WCprice: {
+                    [tenVol]: -111,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "",
+                ETA: "",
+                arrivalTime: "32",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+
+            "BACAU": {
+                country: "ROMANIA",
+                WCprice: {
+                    [tenVol]: 70,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "CONSTANTZA",
+                ETD: "CONSTANTZA",
+                ETA: "CONSTANTZA",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ``
+            },
+
+            "BRASOV": {
+                country: "ROMANIA",
+                WCprice: {
+                    [tenVol]: 71,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "CONSTANTZA",
+                ETD: "CONSTANTZA",
+                ETA: "CONSTANTZA",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ``
+            },
+
+            "BUCHAREST": {
+                country: "ROMANIA",
+                WCprice: {
+                    [tenVol]: -81,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "CONSTANTZA",
+                ETD: "CONSTANTZA",
+                ETA: "CONSTANTZA",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ``
+            },
+
+            "PITESTI": {
+                country: "ROMANIA",
+                WCprice: {
+                    [tenVol]: 68,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "CONSTANTZA",
+                ETD: "CONSTANTZA",
+                ETA: "CONSTANTZA",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ``
+            },
+            /* -----------------------------保加利亚----------------------------------*/
+            "BURGAS": {
+                country: "BULGARIA",
+                WCprice: {
+                    [tenVol]: 119,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ``
+            },
+            "VARNA": {
+                country: "BULGARIA",
+                WCprice: {
+                    [tenVol]: 124,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ``
+            },
+            "SOFIA": {
+                country: "BULGARIA",
+                WCprice: {
+                    [tenVol]: 24,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ``
+            },
+            /* -----------------------------英国----------------------------------*/
+            "FELIXSTOWE": {
+                country: "UK",
+                WCprice: {
+                    "0-1": -126,
+                    "1-3": -102,
+                    "3-7": -92,
+                    "7-10": -88,
+                },
+                BSprice: {
+                    "0-1": -215,
+                    "1-3": -198,
+                    "3-7": -183,
+                    "7-10": -160,
+                },
+                JXprice: notPrice,
+                VIA: "",
+                ETD: 5,
+                ETA: 4,
+                arrivalTime: "43",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1,收ENS:USD25/SET +ICS: USD30/SET，熏蒸                                                             
+2,此3种产品,请咨询后再下单:Food stuffs（食品）, Organic materials（有机材料）, Animal by-products/Veterinary cargo（兽产品), 塑胶制品（Plastic items）`
+            },
+
+            "BIRMINGHAM": {
+                country: "UK",
+                WCprice: {
+                    [tenVol]: -43,
+                },
+                BSprice: {
+                    [tenVol]: -80,
+
+                },
+                JXprice: notPrice,
+                VIA: "FELIXSTOWE",
+                ETD: "FELIXSTOWE",
+                ETA: "FELIXSTOWE",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1.收ENS:USD25/SET +ICS: USD30/SET，FLX清关   
+2.提单目的港可以显示相应港口名字，但实际只运到FLX，后半段费用由CNEE和代理直接沟通确认                                 
+ 3,此3种产品,请咨询后再下单:Food stuffs（食品）, Organic materials（有机材料）, Animal by-products/Veterinary cargo（兽产品), 塑胶制品（Plastic items）`
+            },
+
+            "SOUTHAMPTON": {
+                country: "UK",
+                WCprice: {
+                    "0-1": -126,
+                    "1-3": -102,
+                    "3-7": -92,
+                    "7-10": -88,
+                },
+                BSprice: {
+                    "0-1": -215,
+                    "1-3": -198,
+                    "3-7": -183,
+                    "7-10": -160,
+                },
+                JXprice: notPrice,
+                VIA: "FELIXSTOWE",
+                ETD: "FELIXSTOWE",
+                ETA: "FELIXSTOWE",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1.收ENS:USD25/SET +ICS: USD30/SET，FLX清关   
+2.提单目的港可以显示相应港口名字，但实际只运到FLX，后半段费用由CNEE和代理直接沟通确认                                 
+ 3,此3种产品,请咨询后再下单:Food stuffs（食品）, Organic materials（有机材料）, Animal by-products/Veterinary cargo（兽产品), 塑胶制品（Plastic items）`
+            },
+            get BRISTOL() { return this.BIRMINGHAM; },
+            get GLASGOW() { return this.BIRMINGHAM; },
+            get LEEDS() { return this.BIRMINGHAM; },
+            get LIVERPOOL() { return this.BIRMINGHAM; },
+            get TILBURY() { return this.BIRMINGHAM; },
+            get MANCHESTER() { return this.BIRMINGHAM; },
+            get NOTTINGHAM() { return this.BIRMINGHAM; },
+
+
+            get LONDON() { return this.SOUTHAMPTON; },
+
+
+
+
+            /* -----------------------------捷克----------------------------------*/
+
+            "PRAGUE": {
+                country: "CZECH REPUBLIC",
+                WCprice: {
+                    [tenVol]: 2,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "YML",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET,熏蒸`
+            },
+            /* -----------------------------奥地利----------------------------------*/
+
+            "LINZ": {
+                country: "AUSTRIA",
+                WCprice: {
+                    [tenVol]: 4,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET
+2. 食品，保律品（如维它命），摩托车及那些涉及目的港检验检疫的货品，不可以去PRAGUE及VIA PRAGUE至其它港口
+3.由我司统一报关`
+            },
+            "VIENNA": {
+                country: "AUSTRIA",
+                WCprice: {
+                    [tenVol]: 2,
+                },
+                BSprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "MSC",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET
+2. 食品，保律品（如维它命），摩托车及那些涉及目的港检验检疫的货品，不可以去PRAGUE及VIA PRAGUE至其它港口
+3.由我司统一报关`
+            },
+
+
+            /* -----------------------------斯洛伐克----------------------------------*/
+            "BRATISLAVA": {
+                country: "SLOVAKIA",
+                WCprice: {
+                    [tenVol]: 2,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET
+2. 食品，保律品（如维它命），摩托车及那些涉及目的港检验检疫的货品，不可以去PRAGUE及VIA PRAGUE至其它港口
+3.由我司统一报关`
+            },
+            /* -----------------------------匈牙利----------------------------------*/
+            "BUDAPEST": {
+                country: "HUNGARY",
+                WCprice: {
+                    [tenVol]: 13,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "HAMBURG",
+                ETD: "HAMBURG",
+                ETA: "HAMBURG",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "MSC",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET`
+            },
+            /* -----------------------------丹麦----------------------------------*/
+            "COPENHAGEN": {
+                country: "DENMARK",
+                WCprice: {
+                    "0-1": -129,
+                    "1-3": -114,
+                    "3-5": -88,
+                    "5-10": -58,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 3,
+                ETA: 5,
+                arrivalTime: 46,
+                cashOnDelivery: true,
+                shipName: "OOCL",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET`
+            },
+
+            get AARHUS() { return this.COPENHAGEN; },
+            /* -----------------------------瑞典----------------------------------*/
+            "GOTHENBURG": {
+                country: "SWEDEN",
+                WCprice: {
+                    [tenVol]: -10,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: "2",
+                ETA: "2",
+                arrivalTime: 44,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET`
+            },
+
+            "STOCKHOLM": {
+                country: "SWEDEN",
+                WCprice: {
+                    [tenVol]: 101,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "GOTHENBURG",
+                ETD: "GOTHENBURG",
+                ETA: "GOTHENBURG",
+                arrivalTime: "+30",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET`
+            },
+
+
+
+            "MALMO": {
+                country: "SWEDEN",
+                WCprice: {
+                    [tenVol]: 96,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "GOTHENBURG",
+                ETD: "GOTHENBURG",
+                ETA: "GOTHENBURG",
+                arrivalTime: "+30",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET`
+            },
+            /* -----------------------------芬兰----------------------------------*/
+            "HELSINKI": {
+                country: "FINLAND",
+                WCprice: {
+                    [tenVol]: 72,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: "3",
+                ETA: "5",
+                arrivalTime: 46,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET`
+            },
+            /* -----------------------------法国----------------------------------*/
+            "LE HAVRE": {
+                country: "FRANCE",
+                WCprice: {
+                    "0-1": -24,
+                    "1-3": -19,
+                    "3-7": -14,
+                    "7-10": -14
+                },
+                BSprice: {
+                    "0-1": -19,
+                    "1-3": -14,
+                    "3-7": -9,
+                    "7-10": -9
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "3",
+                ETA: "2",
+                arrivalTime: 34,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET，熏蒸 ,
+2. 所有到Le Havre的货，若单件货物超过2500KGS，目的港仓库要加收USD 80/件的超重附加费
+3. 凡是从中国进口到法国的木质包装货物或含有木质成分的货物，除按规定做好相关处理（如熏蒸），收货人还必须在船舶到港前提前向海关申报，海关当局收到信息后会决定货物到港时是否需要开箱抽查！若此类货物没有提前早报，海关可能会hold住整个柜子，并产生高额罚款！`
+            },
+
+            "FOS": {
+                country: "FRANCE",
+                WCprice: {
+                    [tenVol]: -12,
+                },
+                BSprice: {
+                    [tenVol]: -7,
+
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "LE HAVRE",
+                ETD: "LE HAVRE",
+                ETA: "LE HAVRE",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET  
+2. LHV清关,若单件货物超过1000KGS，或单件货物外包装长或宽超过120CM时，则要事先与代理case by case确认
+3. 凡是从中国进口到法国的木质包装货物或含有木质成分的货物，除按规定做好相关处理（如熏蒸），收货人还必须在船舶到港前提前向海关申报，海关当局收到信息后会决定货物到港时是否需要开箱抽查！若此类货物没有提前早报，海关可能会hold住整个柜子，并产生高额罚款！`
+            },
+
+            get MARSEILLES() { return this.FOS; },
+
+            "LYON": {
+                country: "FRANCE",
+                WCprice: {
+                    [tenVol]: 51,
+
+                },
+                BSprice: {
+                    [tenVol]: 56,
+
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "LE HAVRE",
+                ETD: "LE HAVRE",
+                ETA: "LE HAVRE",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET  
+2. LHV清关,若单件货物超过1000KGS，或单件货物外包装长或宽超过120CM时，则要事先与代理case by case确认
+3. 凡是从中国进口到法国的木质包装货物或含有木质成分的货物，除按规定做好相关处理（如熏蒸），收货人还必须在船舶到港前提前向海关申报，海关当局收到信息后会决定货物到港时是否需要开箱抽查！若此类货物没有提前早报，海关可能会hold住整个柜子，并产生高额罚款！`},
+
+
+            "PARIS": {
+                country: "FRANCE",
+                WCprice: {
+                    [tenVol]: 21,
+
+                },
+                BSprice: {
+                    [tenVol]: 26,
+
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "LE HAVRE",
+                ETD: "LE HAVRE",
+                ETA: "LE HAVRE",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET  
+2. LHV清关,若单件货物超过1000KGS，或单件货物外包装长或宽超过120CM时，则要事先与代理case by case确认
+3. 凡是从中国进口到法国的木质包装货物或含有木质成分的货物，除按规定做好相关处理（如熏蒸），收货人还必须在船舶到港前提前向海关申报，海关当局收到信息后会决定货物到港时是否需要开箱抽查！若此类货物没有提前早报，海关可能会hold住整个柜子，并产生高额罚款！`},
+            /* -----------------------------荷兰----------------------------------*/
+
+            "ROTTERDAM": {
+                country: "NETHERLANDS",
+                WCprice: {
+                    "0-1": -217,
+                    "1-3": -181,
+                    "3-5": -164,
+                    "5-10": -138
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "",
+                ETD: "5",
+                ETA: "4",
+                arrivalTime: 35,
+                cashOnDelivery: true,
+                shipName: "ONE / COSCO",
+                notes: `1，收ENS:USD25/SET +ICS: USD30/SET,
+2.不收石头类产品（花岗岩，大理石等）,
+3.不接受任何动物类（如兽类制品）或植物类货物（如植物种子），因此类产品必须提供相关证书才能清关，且流程复杂！否则整个集装箱都会被海关没收或销毁或退回起运港！
+4.食品类的也不收
+5;磁性物体不收`
+                // get notes() { return portData.PARIS.notes; },
+                // set notes(val) { portData.PARIS.notes = val; }
+            },
+
+            "AMSTERDAM": {
+                country: "NETHERLANDS",
+                WCprice: {
+                    [tenVol]: -40
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "ONE / COSCO",
+                get notes() { return portData.PARIS.notes; },
+                set notes(val) { portData.PARIS.notes = val; }
+            },
+            /* -----------------------------葡萄牙----------------------------------*/
+            "LEIXOES": {
+                country: "PORTUGAL",
+                WCprice: {
+                    [tenVol]: 92,
+                },
+                BSprice: {
+                    [tenVol]: 215,
+                },
+                JXprice: notPrice,
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+6",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                // get notes() { return portData.PARIS.notes; },
+                set notes(val) { portData.PARIS.notes = val; }
+            },
+
+
+            get OPORTO() { return this.LEIXOES; },
+            get LISBON() { return this.LEIXOES; },
+            /* -----------------------------冰岛----------------------------------*/
+            "REYKJAVIK": {
+                country: "ICELAND",
+                WCprice: {
+                    [tenVol]: 148,
+                },
+                BSprice: {
+                    [tenVol]: 310,
+                },
+                JXprice: notPrice,
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+5",
+                cashOnDelivery: false,
+                shipName: "EMC",
+                get notes() { return "大于3CBM请单独咨询" },
+            },
+            /* -----------------------------比利时----------------------------------*/
+
+            "ANTWERP": {
+                country: "BELGIUM",
+                WCprice: {
+                    "0-1": -129,
+                    "1-3": -110,
+                    "3-7": -100,
+                    "7-10": -97
+                },
+                BSprice: {
+                    "0-1": -10,
+                    "1-3": -5,
+                    "3-7": 0,
+                    "7-10": 5
+                },
+                JXprice: notPrice,
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "EMC",
+                // get notes() { return portData.ROTTERDAM.notes; },
+
+            },
+
+            /* -----------------------------爱尔兰----------------------------------*/
+            "BELFAST": {
+                country: "IRELAND",
+                WCprice: {
+                    [tenVol]: 54,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "EMC",
+                // get notes() { return portData.ROTTERDAM.notes; },
+            },
+
+            "CORK": {
+                country: "IRELAND",
+                WCprice: {
+                    [tenVol]: 54,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+15",
+                cashOnDelivery: true,
+                shipName: "EMC",
+                // get notes() { return portData.ROTTERDAM.notes; },
+            },
+
+            "DUBLIN": {
+                country: "IRELAND",
+                WCprice: {
+                    [tenVol]: 7,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "ROTTERDAM",
+                ETD: "ROTTERDAM",
+                ETA: "ROTTERDAM",
+                arrivalTime: "+15",
+                cashOnDelivery: true,
+                shipName: "EMC",
+                get notes() { return portData.ROTTERDAM.notes; },
+            },
+
+            /* -----------------------------西班牙----------------------------------*/
+            "BARCELONA": {
+                country: "SPAIN",
+                WCprice: {
+                    "0-1": -166,
+                    "1-3": -141,
+                    "3-7": -131,
+                    "7-10": -116
+                },
+                BSprice: {
+                    "0-1": -161,
+                    "1-3": -135,
+                    "3-7": -125,
+                    "7-10": -125
+                },
+                JXprice: notPrice,
+                VIA: "",
+                ETD: "1",
+                ETA: "6",
+                arrivalTime: 50,
+                cashOnDelivery: true,
+                shipName: "ONE",
+                notes: `1,收ENS:USD25/SET +ICS: USD30/SET
+2. 食品不接
+3，宠物用品等需查询后，才能确认是否可接？`},
+
+            "VALENCIA": {
+                country: "SPAIN",
+                WCprice: {
+                    "1-3": -136,
+                    "3-8": -121,
+                },
+                BSprice: {
+                    "1-3": -130,
+                    "3-8": -125,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+
+            "ALGECIRAS": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -41,
+                },
+                BSprice: {
+                    [tenVol]: -50,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+            "ALICANTE": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -85,
+                },
+                BSprice: {
+                    [tenVol]: -76,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+
+            "BILBAO": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -98,
+                },
+                BSprice: {
+                    [tenVol]: -76,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+
+            "MADRID": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -98,
+                },
+                BSprice: {
+                    [tenVol]: -96,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+
+            "MALAGA": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -98,
+                },
+                BSprice: {
+                    [tenVol]: -50,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+
+            "TOLEDO": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -60,
+                },
+                BSprice: {
+                    [tenVol]: -50,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+
+            "VIGO": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -95,
+                },
+                BSprice: {
+                    [tenVol]: -76,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+
+            "LAS PALMAS": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -65,
+                },
+                BSprice: {
+                    [tenVol]: -80,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+
+            "ZARAGOZA": {
+                country: "SPAIN",
+                WCprice: {
+                    [tenVol]: -90,
+                },
+                BSprice: {
+                    [tenVol]: -62,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "ONE",
+                // get notes() { return portData.BARCELONA.notes; },
+            },
+            /* -----------------------------马耳他----------------------------------*/
+            "MALTA": {
+                country: "MALTA",
+                WCprice: {
+                    [tenVol]: 105,
+                },
+                BSprice: {
+                    [tenVol]: 110,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "1",
+                ETA: "6",
+                arrivalTime: 44,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET`
+            },
+            /* -----------------------------意大利----------------------------------*/
+            "GENOVA": {
+                country: "ITALY",
+                WCprice: {
+                    "0-1": -263,
+                    "1-3": -238,
+                    "3-5": -208,
+                    "5-10": -158
+                },
+                BSprice: {
+                    "0-1": -258,
+                    "1-3": -233,
+                    "3-5": -203,
+                    "5-10": -153
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "3",
+                ETA: "3",
+                arrivalTime: 41,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET`
+            },
+            get GENOA() { return this.GENOVA; },
+
+            "MILANO": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -152 },
+                BSprice: { [tenVol]: -147 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+3",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+            get MILANO() { return this.MILANO; },
+            // 索引1
+            "ANCONA": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -142 },
+                BSprice: { [tenVol]: -137 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+3",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引2
+            "BARI": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -102 },
+                BSprice: { [tenVol]: -97 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+7",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引3
+            "LA SPEZIA": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -146 },
+                BSprice: { [tenVol]: -141 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引4
+            "SALERNO": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -102 },
+                BSprice: { [tenVol]: -97 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+4",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引5
+            "LIVORNO": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -127 },
+                BSprice: { [tenVol]: -122 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引6
+            "CATANIA": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -72 },
+                BSprice: { [tenVol]: -67 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+3",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引7
+            "NAPLES": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -112 },
+                BSprice: { [tenVol]: -107 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+3",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+            get NAPOLI() { return this.NAPLES; },
+            // 索引8
+            "PALERMO": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -72 },
+                BSprice: { [tenVol]: -67 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+5",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引9
+            "VENICE": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -147 },
+                BSprice: { [tenVol]: -142 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+4",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+            get VENEZIA() { return this.VENICE; },
+            // 索引10
+            "ROMA": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -119 },
+                BSprice: { [tenVol]: -114 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+4",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引11
+            "TARANTO": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -87 },
+                BSprice: { [tenVol]: -82 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+5",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            // 索引12
+            "TRIESTE": {
+                country: "ITALY",
+                WCprice: { [tenVol]: -117 },
+                BSprice: { [tenVol]: -112 },
+                get JXprice() { return this.WCprice; },
+                VIA: "GENOVA",
+                ETD: "GENOVA",
+                ETA: "GENOVA",
+                arrivalTime: "中转+4",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            /* -----------------------------塞浦路斯----------------------------------*/
+
+            "LIMASSOL": {
+                country: "CYPRUS",
+                WCprice: { [tenVol]: 147 },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "3",
+                ETA: "3",
+                arrivalTime: 50,
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: `1. 收ENS:USD25/SET +ICS: USD30/SET`
+            },
+
+            /* -----------------------------希腊----------------------------------*/
+            "PIRAEUS": {
+                country: "GREECE",
+                WCprice: { [tenVol]: 77 },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "38",
+                ETD: "3",
+                ETA: "3",
+                arrivalTime: "",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            "ATHENS": {
+                country: "GREECE",
+                WCprice: { [tenVol]: 102 },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "PIRAEUS",
+                ETD: "PIRAEUS",
+                ETA: "PIRAEUS",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            "THESSALONIKI": {
+                country: "GREECE",
+                WCprice: { [tenVol]: 102 },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "42",
+                ETD: "3",
+                ETA: "3",
+                arrivalTime: "",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            /* -----------------------------土耳其----------------------------------*/
+            "ISTANBUL": {
+                country: "TURKEY",
+                WCprice: {
+                    [tenVol]: -40,
+                },
+                BSprice: {
+                    "0-1": -253,
+                    "1-3": -230,
+                    "3-5": -184,
+                    "5-10": -130
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "3",
+                ETA: "7",
+                arrivalTime: 46,
+                cashOnDelivery: true,
+                shipName: "ONE/MSC",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET`
+            },
+
+            get AMBARLIS() { return this.ISTANBUL; },
+
+            "IZMIR": {
+                country: "TURKEY",
+                WCprice: {
+                    [tenVol]: -73,
+                },
+                get BSprice() { return this.WCprice; },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "3",
+                ETA: "3",
+                arrivalTime: 41,
+                cashOnDelivery: true,
+                shipName: "ONE/MSC",
+                notes: `收ENS:USD25/SET +ICS: USD30/SET`
+            },
+            /* -----------------------------澳大利亚----------------------------------*/
+            "MELBOURNE": {
+                country: "AUSTRALIA",
+                WCprice: {
+                    [tenVol]: -55,
+                },
+                BSprice: {
+                    [tenVol]: -55,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 3,
+                ETA: 7,
+                arrivalTime: 17,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: ""
+            },
+
+            get SYDNEY() { return this.MELBOURNE; },
+
+            "ADELAIDE": {
+                country: "AUSTRALIA",
+                WCprice: {
+                    [tenVol]: 18,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+15",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: ""
+            },
+
+            "BRISBANE": {
+                country: "AUSTRALIA",
+                WCprice: {
+                    [tenVol]: 15,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+11",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: ""
+            },
+
+            "FREMANTLE": {
+                country: "AUSTRALIA",
+                WCprice: {
+                    [tenVol]: 18,
+                },
+                BSprice: notPrice,
+                JXprice: notPrice,
+                VIA: "SINGAPORE",
+                ETD: "SINGAPORE",
+                ETA: "SINGAPORE",
+                arrivalTime: "+11",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: ""
+            },
+
+            /* -----------------------------新西兰----------------------------------*/
+            "AUCKLAND": {
+                country: "NEW ZEALAND",
+                WCprice: {
+                    [tenVol]: 10,
+                },
+                BSprice: {
+                    [tenVol]: 5,
+                },
+                JXprice: {
+                    [tenVol]: 10,
+                },
+                VIA: "",
+                ETD: 4,
+                ETA: 3,
+                arrivalTime: 17,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "熏蒸,香港直拼，目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "ASHBURTON": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 55 },
+                BSprice: { [tenVol]: 60 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",  // 已修改
+                ETA: "AUCKLAND",  // 已修改
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "BLENHEIM": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 73 },
+                BSprice: { [tenVol]: 78 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "CHRISTCHURCH": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 60 },
+                BSprice: { [tenVol]: 65 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "DUNEDIN": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 55 },
+                BSprice: { [tenVol]: 60 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "GISBORNE": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 75 },
+                BSprice: { [tenVol]: 80 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+9",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "HAMILTON": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 45 },
+                BSprice: { [tenVol]: 50 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+18",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "HASTINGS": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 57 },
+                BSprice: { [tenVol]: 62 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "INVERCARGIL": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 75 },
+                BSprice: { [tenVol]: 80 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "LYTTELTON": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 60 },
+                BSprice: { [tenVol]: 65 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "NELSON": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 76 },
+                BSprice: { [tenVol]: 81 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "PALMERSTON": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 75 },
+                BSprice: { [tenVol]: 80 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "ROTORUA": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 63 },
+                BSprice: { [tenVol]: 68 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+11",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "TAURANGA": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 53 },
+                BSprice: { [tenVol]: 53 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+9",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "TIMARU": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 55 },
+                BSprice: { [tenVol]: 60 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "WELLINGTON": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 75 },
+                BSprice: { [tenVol]: 80 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+9",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "WHANGAREI": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 55 },
+                BSprice: { [tenVol]: 60 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            "WANGANUI": {
+                country: "NEW ZEALAND",
+                WCprice: { [tenVol]: 80 },
+                BSprice: { [tenVol]: 85 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+12",
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: "1:333kg，熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+
+            /* -----------------------------西萨摩亚----------------------------------*/
+            "APIA": {
+                country: "SAMOA",
+                WCprice: {
+                    [tenVol]: 330,
+                },
+                BSprice: {
+                    [tenVol]: 335,
+                }, get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+7",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+
+            },
+
+            /* -----------------------------所罗门群岛----------------------------------*/
+            "HONIARA": {
+                country: "SOLOMON ISLANDS",
+                WCprice: { [tenVol]: 360 },
+                BSprice: { [tenVol]: 365 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+18",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+
+            /* -----------------------------汤加王国----------------------------------*/
+            "NUKUALOFA": {
+                country: "TOGO",
+                WCprice: { [tenVol]: 330 },
+                BSprice: { [tenVol]: 350 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+11",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+
+            /* -----------------------------东萨摩亚(美属)----------------------------------*/
+            "PAGO PAGO": {
+                country: "SAMOA",
+                WCprice: { [tenVol]: 345 },
+                BSprice: { [tenVol]: 350 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+11",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+
+            /* -----------------------------瓦努阿图----------------------------------*/
+            "SANTO": {
+                country: "VANUATU",
+                WCprice: { [tenVol]: 370 },
+                BSprice: { [tenVol]: 375 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+11",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+
+            /* -----------------------------巴布亚新几内亚----------------------------------*/
+            "AITUTAKI": {
+                country: "PAPUA NEW GUINEA",
+                WCprice: { [tenVol]: 380 },
+                BSprice: { [tenVol]: 385 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+10",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+
+            "LAE": {
+                country: "PAPUA NEW GUINEA",
+                WCprice: { [tenVol]: 358 },
+                BSprice: { [tenVol]: 363 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+18",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+
+            /* -----------------------------斐济----------------------------------*/
+            "LAUTOKA": {
+                country: "Fiji",
+                WCprice: { [tenVol]: 135 },
+                BSprice: { [tenVol]: 140 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+5",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+
+            "SUVA": {
+                country: "Fiji",
+                WCprice: { [tenVol]: 120 },
+                BSprice: { [tenVol]: 125 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+5",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            /* -----------------------------夏威夷----------------------------------*/
+
+            "HONOLULU": {
+                country: "HAWAII",
+                WCprice: { [tenVol]: 225 },
+                BSprice: { [tenVol]: 230 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+11",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "AMS USD 30/BL,熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            /* -----------------------------新喀里多尼亚----------------------------------*/
+            "NOUMEA": {
+                country: "NEW CALEDONIA",
+                WCprice: { [tenVol]: 147 },
+                BSprice: { [tenVol]: 152 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+10",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            /* -----------------------------塔希提岛----------------------------------*/
+            "PAPEETE": {
+                country: "TAHITI",
+                WCprice: { [tenVol]: 130 },
+                BSprice: { [tenVol]: 135 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+10",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            /* -----------------------------关岛----------------------------------*/
+            "GUAM": {
+                country: "GUAM",
+                WCprice: { [tenVol]: 180 },
+                BSprice: { [tenVol]: 180 },
+                get JXprice() { return this.WCprice; },
+                VIA: "AUCKLAND",
+                ETD: "AUCKLAND",
+                ETA: "AUCKLAND",
+                arrivalTime: "+10",
+                cashOnDelivery: false,
+                shipName: "COSCO",
+                notes: "熏蒸,目的港（包含中转港口）都不能高收，不收私人物品"
+            },
+            /* -----------------------------加拿大----------------------------------*/
+            "MONTREAL": {
+                country: "CANADA",
+                WCprice: {
+                    "0-1": 5,
+                    "1-3": 30,
+                    "3-5": 40,
+                    "5-10": 45,
+                    ROTTERDAM: 53
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 3,
+                ETA: 5,
+                arrivalTime: 29,
+                cashOnDelivery: true,
+                shipName: "OOCL/CMA",
+                notes: `1.收AMS,DDC:USD18/RT 熏蒸  
+2.提单收货人是同行，要收取HC:USD50 SET                                  
+2.加拿大AMS 的 收货人是私人,烦请提供护照号码或者加拿大身份证号码,还有出生日期,`
+            },
+
+            "TORONTO": {
+                country: "CANADA",
+                WCprice: {
+                    "0-1": 0,
+                    "1-3": 25,
+                    "3-5": 35,
+                    "5-10": 40,
+                    ROTTERDAM: 48
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 3,
+                ETA: 5,
+                arrivalTime: 29,
+                cashOnDelivery: true,
+                shipName: "OOCL/CMA",
+                get notes() { return portData.MONTREAL.notes },
+
+            },
+
+            "VANCOUVER": {
+                country: "CANADA",
+                WCprice: {
+                    "0-1": 6,
+                    "1-3": 14,
+                    "3-5": 28,
+                    "5-10": 32,
+                    ROTTERDAM: 38
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 3,
+                ETA: 5,
+                arrivalTime: 22,
+                cashOnDelivery: true,
+                shipName: "OOCL/CMA",
+                get notes() { return portData.MONTREAL.notes },
+            },
+
+            /* -----------------------------乌拉圭----------------------------------*/
+            "MONTEVIDEO": {
+                country: "URUGUAY",
+                WCprice: {
+                    "0-1": -232,
+                    "1-3": -190,
+                    "3-10": -103,
+                },
+                BSprice: {
+                    "0-1": -227,
+                    "1-3": -185,
+                    "3-10": -98,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 5,
+                ETA: 4,
+                arrivalTime: 35,
+                cashOnDelivery: true,
+                shipName: "OOCL/CMA",
+                notes: `1.需提供运费，但可以不显示提单上，                    
+2.显示发货人和收货人/通知人详细信息（公司名/地址/联系方式/和税号TAX ID NO .）`
+            },
+
+            /* -----------------------------巴拉圭----------------------------------*/
+            "ASUNCION": {
+                country: "PARAGUAY",
+                WCprice: {
+                    "0-1": -125,
+                    "1-3": -80,
+                    "3-10": -5,
+
+                },
+                BSprice: {
+                    "0-1": -130,
+                    "1-3": -85,
+                    "3-10": 10,
+                }
+                , get JXprice() { return this.WCprice; },
+                VIA: "MONTEVIDEO",
+                ETD: "MONTEVIDEO",
+                ETA: "MONTEVIDEO",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "OOCL/CMA",
+                notes: `只能正本提单，提单显示运费`
+            },
+
+            /* -----------------------------阿根廷----------------------------------*/
+            "BUENOS AIRES": {
+                country: "ARGENTINA",
+                WCprice: {
+                    "0-1": -225,
+                    "1-3": -165,
+                    "3-10": -70,
+                },
+                BSprice:
+                {
+                    "0-1": -220,
+                    "1-3": -160,
+                    "3-10": -65,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 5,
+                ETA: 5,
+                arrivalTime: 37,
+                cashOnDelivery: true,
+                shipName: "OOCL/CMA",
+                notes: "不接私人物品，提单显示NCM NO.(商品编码)和CUIT NO.（收货人营业执照号码），显示净重"
+            },
+
+            "ROSARIO": {
+                country: "ARGENTINA",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: {
+                    [tenVol]: 50,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "MONTEVIDEO",
+                ETD: "MONTEVIDEO",
+                ETA: "MONTEVIDEO",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "OOCL/CMA",
+                notes: "不接私人物品，中转港每周一班船"
+            },
+
+            "CORDOBA": {
+
+                country: "ARGENTINA",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: {
+                    [tenVol]: 50,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "MONTEVIDEO",
+                ETD: "MONTEVIDEO",
+                ETA: "MONTEVIDEO",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "OOCL/CMA",
+                get notes() { return portData.ROSARIO.notes },
+            },
+
+            /* -----------------------------巴西----------------------------------*/
+            "ITAJAI": {
+                country: "BRAZIL",
+                WCprice: {
+                    "0-1": -146,
+                    "1-3": -125,
+                    "3-10": -35,
+                },
+                BSprice: {
+                    "0-1": -141,
+                    "1-3": -120,
+                    "3-10": -30,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 5,
+                ETA: 4,
+                arrivalTime: 31,
+                cashOnDelivery: true,
+                shipName: "YML/ COSCO",
+                notes: `1.只能出我司正本提单，同行不能借代理出自己的提单;
+2.要显示OCEAN FREIGHT，CISF，加收的金额在提单上;
+3.提单务必提供准确N.W / G.W ,以免到港产生USD3000改单费和罚款。
+4.不接受私人物品进口; 不接受医药品类的货物中转
+5.要显示当地CNEE公司注册号CNPJ NO.在CNEE处
+6.要显示NCM NO.也是商品编码在品名处
+7.根据巴西海关I.N.1356 新政规定，巴西所有港口，包括SANTOS / ITAJAI / PARANAGUA / 
+RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后，码头仓库不会要求出示正本提单即可放货。（因此针对巴西货物，如果有SHIPPER要求目的港等通知放货，或者在CNEE未付清货款而提前出货的BOOKING，请一律不要接！！）
+8.如果客户要求O/F CC 或者O/F低收，目的港加收CISF ,我们可以尝试去收取，但如果收不回，就要SHPR承担;
+9.针对药品，化妆品，食品，医疗用品，人体检测设备等只能到santos，不能安排中转，否则需付高额运费;
+10.VIA SANTOS 到其他内陆点的货载总体积不能超过15CBM/6吨 ，超过的CASE BY CASE 询价。SANTOS 的货载超过15CBM，请确认询价;
+11.木质包装必须要熏蒸，否则整柜退回;
+12.普通货到港90天/私人物品到港45天内不提货，海关默认弃货.
+13.中转货物需要进口许可证的货物、需要进行当地健康检测的货物： 转运费在正常费率基础上再加30%`
+            },
+
+            get NAVEGANTES() { return portData.ITAJAI },
+
+
+            "SANTOS": {
+                country: "BRAZIL",
+                WCprice: {
+                    "0-1": -245,
+                    "1-3": -200,
+                    "3-10": -110,
+                },
+                BSprice: {
+                    "0-1": -240,
+                    "1-3": -195,
+                    "3-10": -105,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 5,
+                ETA: 5,
+                arrivalTime: 31,
+                cashOnDelivery: true,
+                shipName: "MAERSK",
+                get notes() { return portData.ITAJAI.notes },
+            },
+
+            "NOVO HAMBURGO": {
+                country: "BRAZIL",
+                WCprice: {
+                    [tenVol]: 25,
+                },
+                BSprice: {
+                    [tenVol]: 30,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "SANTOS",
+                ETD: "SANTOS",
+                ETA: "SANTOS",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "MAERSK",
+                notes: ""
+            },
+
+            "CANOAS": {
+                country: "BRAZIL",
+                WCprice: {
+                    [tenVol]: 25,
+                },
+                BSprice: {
+                    [tenVol]: 30,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "SANTOS",
+                ETD: "SANTOS",
+                ETA: "SANTOS",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "MAERSK",
+                notes: ""
+            },
+
+            "RIO DE JANEIRO": {
+                country: "BRAZIL",
+                WCprice: {
+                    [tenVol]: 25,
+                },
+                BSprice: {
+                    [tenVol]: 30,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "SANTOS",
+                ETD: "SANTOS",
+                ETA: "SANTOS",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "MAERSK",
+                notes: ""
+            },
+
+
+
+            /* -----------------------------墨西哥----------------------------------*/
+            /* -----------------------------墨西哥----------------------------------*/
+            /* -----------------------------墨西哥----------------------------------*/
+            /* -----------------------------墨西哥----------------------------------*/
+            /* -----------------------------巴拿马----------------------------------*/
+            "COLON": {
+                country: "PANAMA",
+                WCprice: {
+                    "1-5": -24,
+                    "5-10": -19,
+                    "10-20": -14,
+                },
+                BSprice: {
+                    "1-5": -19,
+                    "5-10": -14,
+                    "10-20": -9,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 4,
+                ETA: 5,
+                arrivalTime: 44,
+                cashOnDelivery: true,
+                shipName: "CMA/COSCO",
+                notes: `1.所有到COLON或者via colon中转的，不收牌子货。
+2.经COLON中转的货，单件不接受超过3000KGS
+3.经COLON中转的FREE HAND, 单票超过20方的，将额外加收USD15W/M的附加费`},
+
+
+            "PANAMA CITY": {
+                country: "PANAMA",
+                WCprice: {
+                    [tenVol]: 41,
+                },
+                BSprice: {
+                    [tenVol]: 46,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "COLON",
+                ETA: "COLON",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "CMA/COSCO",
+                notes: ""
+            },
+
+            "BALBOA": {
+                country: "PANAMA",
+                WCprice: {
+                    [tenVol]: 41,
+                },
+                BSprice: {
+                    [tenVol]: 46,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "COLON",
+                ETA: "COLON",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "CMA/COSCO",
+                notes: ""
+            },
+
+            "CRISTOBAL": {
+                country: "PANAMA",
+                WCprice: {
+                    [tenVol]: 21,
+                },
+                BSprice: {
+                    [tenVol]: 26,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "COLON",
+                ETA: "COLON",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "CMA/COSCO",
+                notes: ""
+            },
+
+            "COCO SOLO": {
+                country: "PANAMA",
+                WCprice: {
+                    [tenVol]: 21,
+                },
+                BSprice: {
+                    [tenVol]: 26,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "COLON",
+                ETA: "COLON",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "CMA/COSCO",
+                notes: ""
+            },
+            /* -----------------------------牙买加----------------------------------*/
+            "KINGSTON": {
+                country: "JAMAICA",
+                WCprice: {
+                    [tenVol]: 29,
+                },
+                BSprice: {
+                    [tenVol]: 31,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "COLON",
+                ETA: "COLON",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "CMA/COSCO",
+                notes: `1.所有到COLON或者via colon中转的，不收牌子货。需显示收货联系人/公司名/地址/ 公司税号TAX号码/ 电话号码/邮箱地址 
+2.MONTEGO BAY需加：AMS:USD35/BL,B/L FEE:USD25/BL
+3.Montego Bay  尺寸超過1.75米(高) x 1.79米(宽度)或者重量超過5000KGS ,将会拆开外包装进行重新扫描查验和打包，手续费直接收CNEE
+4. 货描处需显示HS CODE及外包装/内包装件数  
+5. 提单必须显示运费，无论预付还是到付  
+6.需同时提供箱单发票,
+7.6.INSPECT FEE:USD40/BL 如果产生实报实销   `
+            },
+
+            "MONTEGO BAY": {
+                country: "JAMAICA",
+                WCprice: {
+                    [tenVol]: 396,
+                },
+                BSprice: {
+                    [tenVol]: 401,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "COLON",
+                ETA: "COLON",
+                arrivalTime: "+8",
+                cashOnDelivery: false,
+                shipName: "CMA/COSCO",
+                // notes: portData.KINGSTON.notes
+                get notes() { return portData.KINGSTON.notes; },
+
+            },
+
+            /* -----------------------------秘鲁----------------------------------*/
+            "CALLAO": {
+                country: "PERU",
+                WCprice: {
+                    "0-1": -168,
+                    "1-3": -131,
+                    "3-5": -111,
+                    "5-10": -101
+                },
+                BSprice: {
+                    "0-1": -158,
+                    "1-3": -121,
+                    "3-5": -101,
+                    "5-10": -91
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "1",
+                arrivalTime: 33,
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1/香港二程冷冻柜,宽2.1米以内,高:2.25米以内
+2/15天没提的默认锁定弃货状态，但是CNEE还是有提货权，CNEE需要提交海关申请解除这个状态然后进行正常清关
+3/薰蒸
+4/只能出正本。`
+            },
+            get PERU() { return this.CALLAO; },
+            /* -----------------------------智利----------------------------------*/
+            "IQUIQUE": {
+                country: "CHILE",
+                WCprice: { [tenVol]: 45 },
+                BSprice: { [tenVol]: 50 },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: 4,
+                ETA: 1,
+                arrivalTime: "38",
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: `1.内陆中转货载，需提供装箱单发票和NCM.NO(即商品编码)
+2.香港二程冷冻柜，宽2.1米以内，高：2.25米以内`
+            },
+
+
+            "SAN ANTONIO": {
+                country: "CHILE",
+                WCprice: {
+                    "0-1": -220,
+                    "1-3": -190,
+                    "3-5": -160,
+                    "5-10": -140
+                },
+                BSprice: {
+                    "0-1": -215,
+                    "1-3": -185,
+                    "3-5": -155,
+                    "5-10": -135
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "2",
+                arrivalTime: 49,
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.智利的货需要提供(/公司名/ 公司税号TAX号码//邮箱地址)            
+2.香港二程冷冻柜,宽2.1米以内,高:2.25米以内`
+            },
+
+            "VALPARAISO": {
+                country: "CHILE",
+                WCprice: {
+                    "0-1": -220,
+                    "1-3": -190,
+                    "3-5": -160,
+                    "5-10": -140
+                },
+                BSprice: {
+                    "0-1": -215,
+                    "1-3": -185,
+                    "3-5": -155,
+                    "5-10": -135
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "2",
+                arrivalTime: 49,
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.智利的货需要提供(/公司名/ 公司税号TAX号码//邮箱地址)            
+2.香港二程冷冻柜,宽2.1米以内,高:2.25米以内`
+            },
+
+
+            "ANTOFAGASTA": {
+                country: "CHILE",
+                WCprice: { [tenVol]: 110 },
+                BSprice: { [tenVol]: 115 },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN ANTONIO",
+                ETD: "SAN ANTONIO",
+                ETA: "SAN ANTONIO",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.中转加DDT:USD50/BL,只能预付
+2.中转的货长不能超过5M,重量单票不超过4500KG
+3.如果单件超过25KGS的话，需有底托可以允许叉车作业，否则整柜退回起运地。   
+4，在SNT清关付款后，才可中转
+5.香港二程冷冻柜，宽2.1米以内，高：2.25米以内`
+            },
+
+            get ARICA() { return this.ANTOFAGASTA; },
+
+            "SANTIAGO": {
+                country: "CHILE",
+                WCprice: { [tenVol]: 50 },
+                BSprice: { [tenVol]: 55 },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN ANTONIO",
+                ETD: "SAN ANTONIO",
+                ETA: "SAN ANTONIO",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "WHL",
+
+            },
+
+            "PUNTA ARENAS": {
+                country: "CHILE",
+                WCprice: { [tenVol]: 125 },
+                BSprice: { [tenVol]: 130 },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN ANTONIO",
+                ETD: "SAN ANTONIO",
+                ETA: "SAN ANTONIO",
+                arrivalTime: "+15",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.中转加DDT:USD50/BL,只能预付
+2.中转的货长不能超过5M,重量单票不超过4500KG
+3.如果单件超过25KGS的话，需有底托可以允许叉车作业，否则整柜退回起运地。   
+4，在SNT清关付款后，才可中转`
+            },
+
+            "TALCAHUANO": {
+                country: "CHILE",
+                WCprice: { [tenVol]: 150 },
+                BSprice: { [tenVol]: 155 },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN ANTONIO",
+                ETD: "SAN ANTONIO",
+                ETA: "SAN ANTONIO",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.中转加DDT:USD50/BL,只能预付
+2.中转的货长不能超过5M,重量单票不超过4500KG
+3.如果单件超过25KGS的话，需有底托可以允许叉车作业，否则整柜退回起运地。   
+4，在SNT清关付款后，才可中转`
+            },
+
+            /* -----------------------------玻利维亚----------------------------------*/
+            "SANTA CRUZ": {
+                country: "BOLIVIA",
+                WCprice: { [tenVol]: 185 },
+                BSprice: { [tenVol]: 190 },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN ANTONIO",
+                ETD: "SAN ANTONIO",
+                ETA: "SAN ANTONIO",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `需要打托
+                1.中转港每周一班船，中转加DDT:USD50/BL,只能预付；       
+2.如果单件超过25KGS的话，需有底托可以允许叉车作业，否则整柜退回起运地。     
+3.单件货限重2500KGS, 超过的请务必与代理事先确认咨询；   
+4.货物外包装必须有清晰的唛头识别；     
+5.私人物品必须事先获取玻利维亚在起运地大使馆出具的书面申报证明，同时也必须证明SHPR/CNEE在玻利维亚以外的国家或地区居住连续超过两年；`
+            },
+
+            "COCHABAMBA": {
+                country: "BOLIVIA",
+                WCprice: { [tenVol]: 200 },
+                BSprice: { [tenVol]: 205 },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN ANTONIO",
+                ETD: "SAN ANTONIO",
+                ETA: "SAN ANTONIO",
+                arrivalTime: "+15",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.中转港每周一班船，中转加DDT:USD50/BL,只能预付；       
+2.如果单件超过25KGS的话，需有底托可以允许叉车作业，否则整柜退回起运地。     
+3.单件货限重2500KGS, 超过的请务必与代理事先确认咨询；   
+4.货物外包装必须有清晰的唛头识别；     
+5.私人物品必须事先获取玻利维亚在起运地大使馆出具的书面申报证明，同时也必须证明SHPR/CNEE在玻利维亚以外的国家或地区居住连续超过两年；           `
+            },
+
+            "LA PAZ": {
+                country: "BOLIVIA",
+                WCprice: { [tenVol]: 180 },
+                BSprice: { [tenVol]: 185 },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN ANTONIO",
+                ETD: "SAN ANTONIO",
+                ETA: "SAN ANTONIO",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.中转港每周一班船，中转加DDT:USD50/BL,只能预付；       
+2.如果单件超过25KGS的话，需有底托可以允许叉车作业，否则整柜退回起运地。     
+3.单件货限重2500KGS, 超过的请务必与代理事先确认咨询；   
+4.货物外包装必须有清晰的唛头识别；     
+5.私人物品必须事先获取玻利维亚在起运地大使馆出具的书面申报证明，同时也必须证明SHPR/CNEE在玻利维亚以外的国家或地区居住连续超过两年；           `
+            },
+
+            /* -----------------------------厄瓜多尔----------------------------------*/
+            "GUAYAQUIL": {
+                country: "ECUADOR",
+                WCprice: {
+                    "0-1": -138,
+                    "1-3": -128,
+                    "3-6": -103,
+                    "6-10": -73,
+                    "10-15": -58,
+                },
+                BSprice: {
+                    "0-1": -133,
+                    "1-3": -123,
+                    "3-6": -108,
+                    "6-10": -78,
+                    "10-15": -53,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "1",
+                arrivalTime: 36,
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.提供RUC NO.(收货人营业执业号码)和H.S.CODE（海关商品编码），运费要提供，可以不显示在提单上。                                 
+2.当地海关要求：务必在外包装上面的贴上唛头，唛头内容如下：Shipper's name/Number of packages/Cargo’s weight,以免货物困为唛头不清晰而被海关扣货. （货物必须要有唛头,且唛头上有注有箱号.比如说,这个货共10箱,那么唛头就备注1/10, 2/10,3/10......10/10，否则海关可能会罚款USD183）
+3.香港二程冷冻柜,宽2.1米以内,高:2.25米以内
+4.薰蒸, 只能出正本。`
+
+            },
+            /* -----------------------------哥斯达黎加----------------------------------*/
+            "SAN JOSE": {
+                country: "COSTA RICA",
+                WCprice: {
+                    "0-1": -145,
+                    "1-3": -116,
+                    "3-10": -65,
+                }, BSprice: {
+                    "0-1": -140,
+                    "1-3": -110,
+                    "3-10": -60,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "5",
+                ETA: "1",
+                arrivalTime: 50,
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: ""
+            },
+            "PUERTO LIMON": {
+                country: "COSTA RICA",
+                WCprice: {
+                    "0-1": -145,
+                    "1-3": -116,
+                    "3-10": -65,
+                }, BSprice: {
+                    "0-1": -140,
+                    "1-3": -110,
+                    "3-10": -60,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN JOSE",
+                ETD: "SAN JOSE",
+                ETA: "SAN JOSE",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "HAPAG LLOYD",
+                notes: `目的港仓库在SAN JOSE ，单票超过5000KGS ，运费要CASE BY CASE `
+            },
+            "PUERTO CALDERA": {
+                country: "COSTA RICA",
+                WCprice: {
+                    "0-1": -145,
+                    "1-3": -116,
+                    "3-10": -65,
+                }, BSprice: {
+                    "0-1": -140,
+                    "1-3": -110,
+                    "3-10": -60,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN JOSE",
+                ETD: "SAN JOSE",
+                ETA: "SAN JOSE",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "WHAPAG HAPAG LLOYD",
+                notes: `目的港仓库在SAN JOSE ，单票超过5000KGS ，运费要CASE BY CASE `
+            },
+
+            /* -----------------------------洪都拉斯----------------------------------*/
+            "PUERTO CORTES":{
+                country: "HONDURAS",
+                WCprice: {
+                    "0-1": -70,
+                    "1-3": -40,
+                    "3-5": -15,
+                    "5-20": 15
+                },
+                BSprice: {
+                    "0-1": -65,
+                    "1-3": -35,
+                    "3-5": -10,
+                    "5-20": 20
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "1",
+                arrivalTime: 55,
+                cashOnDelivery: true,
+                shipName: "HPL",
+                notes: "重量误差不得超过2%，否则会产生罚金，目的港仓库在San Pedro Sula (圣彼得苏拉) 或者 Teguciagalpa（特古西加尔巴） ,只能正本  和San Pedro Sula共用一个仓库，单票超过5000KGS ，运费要CASE BY CASE "
+            },
+
+            "SAN PEDRO SULA":{
+                country: "HONDURAS",
+                WCprice: {
+                    "0-1": -102,
+                    "1-3": -64,
+                    "3-5": -39,
+                    "5-20": -10
+                },
+                BSprice: {
+                    "0-1": -97,
+                    "1-3": -63,
+                    "3-5": -38,
+                    "5-20": -9
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "1",
+                arrivalTime: "55",
+                cashOnDelivery: true,
+                shipName: "重量误差不得超过2%，否则会产生罚金，目的港仓库在San Pedro Sula (圣彼得苏拉) 或者 Teguciagalpa（特古西加尔巴）,只能正本，单票超过5000KGS ，运费要CASE BY CASE ",
+            },
+
+            "TEGUCIGALPA":{
+                country: "HONDURAS",
+                WCprice: {
+                    "0-1": 10,
+                    "1-3": 40,
+                    "3-5": 60,
+                    "5-20": 90
+                },
+                BSprice: {
+                    "0-1": 15,
+                    "1-3": 45,
+                    "3-5": 65,
+                    "5-20": 95
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "SAN PEDRO SULA",
+                ETD: "SAN PEDRO SULA",
+                ETA: "SAN PEDRO SULA",
+                arrivalTime: "55",
+                cashOnDelivery: true,
+                shipName: "",
+            },
+
+            /* -----------------------------尼瓜拉瓜----------------------------------*/
+            "GUATEMALA CITY": {
+                country: "GUATEMALA",
+                WCprice: {
+                    "0-1": -60,
+                    "1-3": -29,
+                    "3-10": -5,
+                   
+                },
+                BSprice: {
+                    "0-1": -55,
+                    "1-3": -24,
+                    "3-10": 0, 
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "1",
+                arrivalTime: 40,
+                cashOnDelivery: true,
+                shipName: "WHL/ASA",
+                notes: "单票超过5000KGS ，运费要CASE BY CASE  GUATEMALA CITY (含经其中转的点)单件尺寸、重量限制：length 3.5mts, height 2mts, width 2.3mts, less than 1TON/pkg"
+            },
+
+            "SANTO THOMAS":{
+                country: "GUATEMALA",
+                WCprice: {
+                    [tenVol]:0
+
+                },
+                BSprice: {
+                    [tenVol]:5
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "GUATEMALA CITY",
+                ETD: "GUATEMALA CITY",
+                ETA: "GUATEMALA CITY",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "WHL/ASA"
+            },
+
+            "PUERTO QUETZAL":{
+                country: "GUATEMALA",
+                WCprice: {
+                    [tenVol]:0
+
+                },
+                BSprice: {
+                    [tenVol]:5
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "GUATEMALA CITY",
+                ETD: "GUATEMALA CITY",
+                ETA: "GUATEMALA CITY",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "WHL/ASA"
+            },
+            /* -----------------------------尼瓜拉瓜----------------------------------*/
+            "MANAGUA": {
+                country: "NICARAGUA",
+                WCprice: {
+                    "0-1": -106,
+                    "1-3": -71,
+                    "3-5": -46,
+                    "5-10": -13
+                },
+                BSprice: {
+                    "0-1": -101,
+                    "1-3": -66,
+                    "3-5": -41,
+                    "5-10": -8
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "5",
+                ETA: "1",
+                arrivalTime: 48,
+                cashOnDelivery: true,
+                shipName: "HAPAG LLOYD",
+                notes: `须显示实际包装种类,包装名称和品名需要同时显示英文、西班牙在提单品名处，目的港仓库在managua ,单票超过5000KGS ，运费要CASE BY CASE  只能正本`
+            },
+
+            "CORINTO": {
+                country: "NICARAGUA",
+                WCprice: {
+                    [tenVol]: 45,
+                },
+                BSprice: {
+                    [tenVol]: 50,
+
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANAGUA",
+                ETD: "MANAGUA",
+                ETA: "MANAGUA",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "HAPAG LLOYD",
+                notes: `目的港仓库在MANAGUA，须显示实际包装种类,包装名称和品名需要同时显示英文、西班牙在提单品名处，单票超过5000KGS ，运费要CASE BY CASE  只能正本`
+            },
+            /* -----------------------------墨西哥----------------------------------*/
+
+            // 曼萨尼约
+            "MANZANILLO": {
+                country: "MEXICO",
+                WCprice: {
+                    "0-1": -193,
+                    "1-3": -153,
+                    "3-5": -133,
+                    "5-10": -113
+                },
+                BSprice: {
+                    "0-1": -188,
+                    "1-3": -148,
+                    "3-5": -128,
+                    "5-10": -108
+                },
+                JXprice: {
+                    "0-1": -193,
+                    "1-3": -153,
+                    "3-5": -133,
+                    "5-10": -113
+                },
+                VIA: "",
+                ETD: 4,
+                ETA: 1,
+                arrivalTime: 22,
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: `
+1.需申报AMS(提供真正SHPR,CNEE的详细资料作国外申报用)
+2.不可显示笼统品名,需提供详细品名                   
+3.需显示件数明细,例如: 1 PLT=50CTNS                  
+4.提单需显示收货人TAX ID.NO.                           
+5.代理不帮做DDU             
+6.香港二程冷冻柜,宽2.1米以内,高:2.25米以内
+7. 不收水处理设备/水泵等货物
+8. 中转货物限制,超过无法转运：单件不超过2000kgs， 长2.8米，宽2.2米，高2米`
+            },
+
+            // 索引0
+            "AGUASCALIENTES": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 70 },
+                BSprice: { [tenVol]: 75 },  // WCprice+5
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+4",          // 图片第1行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引1
+            "CD.OBREGON": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 105 },
+                BSprice: { [tenVol]: 110 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+4",          // 图片第2行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引2
+            "CELAYA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 80 },
+                BSprice: { [tenVol]: 85 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+3",          // 图片第3行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引3
+            "COATZACOALCOS": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 120 },
+                BSprice: { [tenVol]: 125 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+4",          // 图片第4行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引4
+            "CUAUTLA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 100 },
+                BSprice: { [tenVol]: 105 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+4",          // 图片第5行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引5
+            "CUERNAVACA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 95 },
+                BSprice: { [tenVol]: 100 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+4",          // 图片第6行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引6
+            "CUCLIACAN": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 90 },
+                BSprice: { [tenVol]: 95 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+4",          // 图片第7行（原用户数据错误，按图片修正）
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引7
+            "GUADALAJARA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 45 },
+                BSprice: { [tenVol]: 50 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+5",          // 图片第8行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引8
+            "GUADALUPE": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 90 },
+                BSprice: { [tenVol]: 95 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+5",          // 图片第9行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引9
+            "HERMOSILLO": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 45 },
+                BSprice: { [tenVol]: 50 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+5",          // 图片第10行（原用户数据错误，按图片修正）
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引10
+            "IRAPUATO": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 70 },
+                BSprice: { [tenVol]: 75 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+4",          // 图片第11行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引11
+            "LEON": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 65 },
+                BSprice: { [tenVol]: 70 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+7",          // 图片第12行（修正"转+7"→"+7"）
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引12
+            "LERMA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 60 },
+                BSprice: { [tenVol]: 65 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+7",          // 图片第13行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引13
+            "MAZATLAN": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 60 },
+                BSprice: { [tenVol]: 65 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+7",          // 图片第14行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引14
+            "MERIDA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 150 },
+                BSprice: { [tenVol]: 155 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+7",          // 图片第15行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引15
+            "MEXICALI.B.CALIFORNIA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 155 },
+                BSprice: { [tenVol]: 160 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+15",         // 图片第16行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引16
+            "MEXICO CITY": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 30 },
+                BSprice: { [tenVol]: 35 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+5",          // 图片第17行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引17
+            "MONTERREY": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 70 },
+                BSprice: { [tenVol]: 75 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+5",          // 图片第18行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引18
+            "MORELIA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 70 },
+                BSprice: { [tenVol]: 75 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+5",          // 图片第19行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引19
+            "PUEBLA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 80 },
+                BSprice: { [tenVol]: 85 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+5",          // 图片第20行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引20
+            "TIJUANA,B.CALIFORNIA": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 180 },
+                BSprice: { [tenVol]: 185 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+5",          // 图片第21行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+            // 索引21
+            "VERA CRUZ": {
+                country: "MEXICO",
+                WCprice: { [tenVol]: 75 },
+                BSprice: { [tenVol]: 80 },
+                get JXprice() { return this.WCprice; },
+                VIA: "MANZANILLO",
+                ETD: "MANZANILLO",
+                ETA: "MANZANILLO",
+                arrivalTime: "+7",          // 图片第22行
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes: ""
+            },
+
+
+            /* -----------------------------摩洛哥----------------------------------*/
+            "CASABLANCA": {
+                country: "MOROCCO",
+                WCprice: {
+                    "0-1": -108,
+                    "1-3": -88,
+                    "3-5": -58,
+                    "5-10": -8
+                },
+                BSprice: {
+                    "0-1": -103,
+                    "1-3": -83,
+                    "3-5": -53,
+                    "5-10": -3
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "3",
+                ETA: "3",
+                arrivalTime: 41,
+                cashOnDelivery: true,
+                shipName: "COSCO",
+                notes: `收货人必须是公司，不接受个人,收ENS:USD25/SET +ICS: USD30/SET，香港直拼,相关的文件资料上必须显示CNEEs的 ICE Code (Identifiant Commun de l'Enterprise) ，包括invoices, manifests, HBLs, MBLs等`
+            },
+
+
+
+        };
+
+
+    </script>
+</body>
+
+</html>
