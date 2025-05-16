@@ -904,7 +904,7 @@
 
                 // 新增赋值逻辑
                 document.getElementById('daofu').value = portInfo.cashOnDelivery || '';
-                document.getElementById('chuanSi').value = portInfo.shipName || '';
+                document.getElementById('chuanSi').value = (portInfo.VIA && portData[portInfo.VIA] && portData[portInfo.VIA].shipName) ? portData[portInfo.VIA].shipName : portInfo.shipName || '';
 
                 // 处理备注显示
                 let notesValue = portInfo.notes || '';
@@ -5583,10 +5583,152 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 notes: `收货人必须是公司，不接受个人,收ENS:USD25/SET +ICS: USD30/SET，香港直拼,相关的文件资料上必须显示CNEEs的 ICE Code (Identifiant Commun de l'Enterprise) ，包括invoices, manifests, HBLs, MBLs等`
             },
 
+            /* -----------------------------ALGERIA----------------------------------*/
+            "ALGIERS":{
+                country: "ALGERIA",
+                WCprice: {
+                    [tenVol]: 191,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+3",
+                cashOnDelivery: true,
+                shipName: "",
+                notes: "收ENS:USD25/SET +ICS: USD30/SET, 且所有包装必须有唛头，且要在提单唛头描述栏如实显示,否则会有罚款产生。"
+            },
+            "ORAN":{
+                country: "ALGERIA",
+                WCprice: {
+                    [tenVol]: 205,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "",
+                notes: "收ENS:USD25/SET +ICS: USD30/SET, 且所有包装必须有唛头，且要在提单唛头描述栏如实显示,否则会有罚款产生。"
+            },
+              /* -----------------------------埃及----------------------------------*/
+              "ALEXANDRIA":{
+                country: "EGYPT",
+                WCprice: {
+                    "0-1": -99,
+                    "1-3": -89,
+                    "3-5": -64,
+                    "5-10": -24,
+                },
+                BSprice: {
+                    "0-1": -94,
+                    "1-3": -84,
+                    "3-5": -59,
+                    "5-10": -19,
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "3",
+                ETA: "3",
+                arrivalTime: 26,
+                cashOnDelivery: true,
+                shipName: "WHL/COSCO",
+                notes:`1.收货人要提供ACID NUMBER
+2.埃及海关规定：服装类(garments)，纺织品(textiles)，,药品（medicines）,鞋类制品(foot wears)以及其原材料(如布料)等类似货物，只能到达Alexandria, 不允许经过Alexandria转运至其他港口
+3.食品类货物需收货人到港前向相关部门申请进口才能清关
+4.凡中转港口都需要在ALEXANDRIA 清关才有中转
+5.薰蒸`
+            },
 
+            "CAIRO":{
+                country: "EGYPT",
+                WCprice: {
+                    [tenVol]: 97,
+                },
+                BSprice: {[tenVol]: 102},
+                get JXprice() { return this.WCprice; },
+                VIA: "ALEXANDRIA",
+                ETD: "ALEXANDRIA",
+                ETA: "ALEXANDRIA",
+                arrivalTime: "+5",
+                cashOnDelivery: true,
+                shipName: "",
+                notes: ""
+            },
 
+            "DAMIETTA":{
+                country: "EGYPT",
+                WCprice: {
+                    [tenVol]: 99,
+                },
+                BSprice: {[tenVol]: 104},
+                get JXprice() { return this.WCprice; },
+                VIA: "ALEXANDRIA",
+                ETD: "ALEXANDRIA",
+                ETA: "ALEXANDRIA",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "",
+                notes: ""
+            },
+
+            "PORT SAID":{
+                country: "EGYPT",
+                WCprice: {
+                    [tenVol]: 97,
+                },
+                BSprice: {[tenVol]: 102},
+                get JXprice() { return this.WCprice; },
+                VIA: "ALEXANDRIA",
+                ETD: "ALEXANDRIA",
+                ETA: "ALEXANDRIA",
+                arrivalTime: "+4",
+                cashOnDelivery: true,
+                shipName: "",
+                notes: ""
+            },
+
+            "SOKHNA":{
+                country: "EGYPT",
+                WCprice: {
+                    [tenVol]: 102,
+                },
+                BSprice: {[tenVol]: 107},
+                get JXprice() { return this.WCprice; },
+                VIA: "ALEXANDRIA",
+                ETD: "ALEXANDRIA",
+                ETA: "ALEXANDRIA",
+                arrivalTime: "+7",
+                cashOnDelivery: true,
+                shipName: "",
+                notes: ""
+            },
+            
+
+              /* -----------------------------突尼斯----------------------------------*/
+              "TUNIS":{
+                country: "TUNISIA",
+                WCprice: {
+                    [tenVol]: 147,
+                },
+                BSprice: notPrice,
+                get JXprice() { return this.WCprice; },
+                VIA: "BARCELONA",
+                ETD: "BARCELONA",
+                ETA: "BARCELONA",
+                arrivalTime: "+4",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:""
+            }
         };
 
+
+
+          
 
     </script>
 </body>
