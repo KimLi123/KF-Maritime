@@ -5907,6 +5907,83 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 notes:`需要加上VGM FEE AT PLT:  USD15/BL，+ENS:USD30 SET 只能预付`
               },
 
+              /* -----------------------------加纳----------------------------------*/
+              "ACCRA":{
+                country: "GHANA",
+                WCprice: {
+                    [tenVol]: 245,
+                },
+                BSprice: {
+                    [tenVol]: 250,
+                },
+                get JXprice() { return this.WCprice; },
+
+                VIA: "DURBAN",
+                ETD: "DURBAN",
+                ETA: "DURBAN",
+                arrivalTime: "+6",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:`目的港两项费用： T/S Cstoms Fee 43/BL + Solas Fee 17/BL需要预付`
+              },
+
+              "TEMA":{
+                country: "GHANA",
+                WCprice: {
+                    [tenVol]: 90,
+                },
+                BSprice: {
+                    [tenVol]: 95,
+                },
+                get JXprice() { return this.WCprice; },
+
+                VIA: "DURBAN",
+                ETD: "DURBAN",
+                ETA: "DURBAN",
+                arrivalTime: "+6",
+                cashOnDelivery: false,
+                shipName: "",
+                notes:`如果VIA DBN,目的港 T/S Customs Fee USD43/BL + Solas Fee USD17/BL 要预付 ，如果是直拼，不用加此两项`
+              },
+
+              "DURBAN":{
+                country: "SOUTH AFRICA",
+                WCprice: {
+                    [tenVol]: -60,
+                },
+                BSprice: {
+                    [tenVol]: -55,
+                },
+                get JXprice() { return this.WCprice; },
+
+                VIA: "",
+                ETD: "2",
+                ETA: "1",
+                arrivalTime: "26",
+                cashOnDelivery: true,
+                shipName: "",
+                notes:`香港直拼,需加收ALH:USD48/ SET`
+              },
+
+              "CAPE TOWN":{
+                country: "SOUTH AFRICA",
+                WCprice: {
+                    [tenVol]: -58,
+                },
+                BSprice: {
+                    [tenVol]: -53,
+                },
+                get JXprice() { return this.WCprice; },
+
+                VIA: "",
+                ETD: "2",
+                ETA: "1",
+                arrivalTime: "26",
+                cashOnDelivery: true,
+                shipName: "",
+                notes:`香港直拼,需加收ALH:USD48/ SET`
+              },
+
         };
 
 
