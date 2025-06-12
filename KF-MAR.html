@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>海运费用计算器</title>
     <style>
-        :root {
+         :root {
             --primary-color: #007F00;
             --secondary-color: #00A550;
             --text-white: #FFFFFF;
@@ -374,8 +374,8 @@
         <div class="result" id="result">
 
         </div>
+        <div id="secondaryInfo" style="margin-top:15px; padding:10px; border:1px dashed #ccc; color:#666; white-space: pre-line;"></div>
         <button onclick="copyResult()" id="copyBtn" style="display:none;">复制结果</button>
-
     </div>
     <!-- 新增复制按钮 -->
     </div>
@@ -601,6 +601,11 @@
             const daofuValue = document.getElementById('daofu').value === 'true' ? '是' : '否';
             const chuanSiValue = document.getElementById('chuanSi').value;
             const beizhuValue = document.getElementById('beizhu').value;
+            
+            // 更新辅助信息
+            document.getElementById('secondaryInfo').innerHTML = `
+                到付：${daofuValue}\n                船司：${chuanSiValue}\n                备注：${beizhuValue.replace(/\n/g, '\n                ')}
+            `;
 
             // 根据仓库类型获取对应价格表
             if (warehouse === 'wuchong' && portInfo.WCprice) {
@@ -711,9 +716,9 @@
             let resultHTML = resultLines.join('\n').replace(/\n{3,}/g, '\n\n');
 
             // 添加新输出项
-            resultHTML += `\n\n支持到付：${daofuValue}`;
-            resultHTML += `\n船司：${chuanSiValue}`;
-            resultHTML += `\n备注：${beizhuValue}`;
+            // resultHTML += `\n\n支持到付：${daofuValue}`;
+            // resultHTML += `\n船司：${chuanSiValue}`;
+            // resultHTML += `\n备注：${beizhuValue}`;
 
             document.getElementById('copyBtn').style.display = 'block';
             document.getElementById('result').innerHTML = resultHTML;
