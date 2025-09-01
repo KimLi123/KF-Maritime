@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>海运费用计算器</title>
     <style>
-         :root {
+        :root {
             --primary-color: #007F00;
             --secondary-color: #00A550;
             --text-white: #FFFFFF;
@@ -374,7 +374,8 @@
         <div class="result" id="result">
 
         </div>
-        <div id="secondaryInfo" style="margin-top:15px; padding:10px; border:1px dashed #ccc; color:#666; white-space: pre-line;"></div>
+        <div id="secondaryInfo"
+            style="margin-top:15px; padding:10px; border:1px dashed #ccc; color:#666; white-space: pre-line;"></div>
         <button onclick="copyResult()" id="copyBtn" style="display:none;">复制结果</button>
     </div>
     <!-- 新增复制按钮 -->
@@ -601,7 +602,7 @@
             const daofuValue = document.getElementById('daofu').value === 'true' ? '是' : '否';
             const chuanSiValue = document.getElementById('chuanSi').value;
             const beizhuValue = document.getElementById('beizhu').value;
-            
+
             // 更新辅助信息
             document.getElementById('secondaryInfo').innerHTML = `
                 到付：${daofuValue}\n                船司：${chuanSiValue}\n                备注：${beizhuValue.replace(/\n/g, '\n                ')}
@@ -711,7 +712,27 @@
             if (schedule) {
                 resultLines.push(`船期：${schedule} ${transferInfo}`);
             }
+            // 入仓费计算逻辑
+            let storageFee = '';
+            const origin2 = document.getElementById('origin').value;
+            const selectedWarehouse = document.querySelector('input[name="port"]:checked')?.id;
 
+            if (origin2 === 'GUANGZHOU') {
+                if (selectedWarehouse === 'wuchong') {
+                    storageFee = '入仓费：RMB 100/BL，如需过磅额外加30';
+                } else if (selectedWarehouse === 'jiaoxin') {
+                    storageFee = '入仓费：RMB 130/BL + 12/RT';
+                }
+            } else if (origin2 === 'QINGDAO') {
+                storageFee = '入仓费：RMB 165/CBM + 325/BL';
+            } else if (origin2 === 'NINGBO') {
+                storageFee = '入仓费：RMB 42/CBM + 40/BL';
+            } else if (origin2 === 'XIAMEN') {
+                storageFee = '入仓费：RMB 25/CBM';
+            }else if (origin2 === 'SHENZHEN') {
+                storageFee = '入仓费：RMB 130/BL，木箱加50';
+            }
+            resultLines.push(storageFee+'（司机办单缴纳给码头）');
             // 合并结果并清理空白
             let resultHTML = resultLines.join('\n').replace(/\n{3,}/g, '\n\n');
 
@@ -5022,7 +5043,7 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
             },
 
             /* -----------------------------洪都拉斯----------------------------------*/
-            "PUERTO CORTES":{
+            "PUERTO CORTES": {
                 country: "HONDURAS",
                 WCprice: {
                     "0-1": -70,
@@ -5043,10 +5064,10 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: 55,
                 cashOnDelivery: true,
                 shipName: "HPL",
-                notes: "重量误差不得超过2%，否则会产生罚金，目的港仓库在San Pedro Sula (圣彼得苏拉) 或者 Teguciagalpa（特古西加尔巴） ,只能正本  和San Pedro Sula共用一个仓库，单票超过5000KGS ，运费要CASE BY CASE "
+                notes: "重量误差不得超过2%，否则会产生罚金，目的港仓库在San Pedro Sula (圣彼得苏拉) 或者 Teguciagalpa（特古西加尔巴） ,只能正本  和San Pedro Sula共用一个仓库，单票超过5000KGS ，运费要CASE BY CASE "
             },
 
-            "SAN PEDRO SULA":{
+            "SAN PEDRO SULA": {
                 country: "HONDURAS",
                 WCprice: {
                     "0-1": -102,
@@ -5066,10 +5087,10 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 ETA: "1",
                 arrivalTime: "55",
                 cashOnDelivery: true,
-                shipName: "重量误差不得超过2%，否则会产生罚金，目的港仓库在San Pedro Sula (圣彼得苏拉) 或者 Teguciagalpa（特古西加尔巴）,只能正本，单票超过5000KGS ，运费要CASE BY CASE ",
+                shipName: "重量误差不得超过2%，否则会产生罚金，目的港仓库在San Pedro Sula (圣彼得苏拉) 或者 Teguciagalpa（特古西加尔巴）,只能正本，单票超过5000KGS ，运费要CASE BY CASE ",
             },
 
-            "TEGUCIGALPA":{
+            "TEGUCIGALPA": {
                 country: "HONDURAS",
                 WCprice: {
                     "0-1": 10,
@@ -5099,12 +5120,12 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                     "0-1": -60,
                     "1-3": -29,
                     "3-10": -5,
-                   
+
                 },
                 BSprice: {
                     "0-1": -55,
                     "1-3": -24,
-                    "3-10": 0, 
+                    "3-10": 0,
                 },
                 get JXprice() { return this.WCprice; },
                 VIA: "",
@@ -5116,14 +5137,14 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 notes: "单票超过5000KGS ，运费要CASE BY CASE  GUATEMALA CITY (含经其中转的点)单件尺寸、重量限制：length 3.5mts, height 2mts, width 2.3mts, less than 1TON/pkg"
             },
 
-            "SANTO THOMAS":{
+            "SANTO THOMAS": {
                 country: "GUATEMALA",
                 WCprice: {
-                    [tenVol]:0
+                    [tenVol]: 0
 
                 },
                 BSprice: {
-                    [tenVol]:5
+                    [tenVol]: 5
                 },
                 get JXprice() { return this.WCprice; },
                 VIA: "GUATEMALA CITY",
@@ -5134,14 +5155,14 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 shipName: "WHL/ASA"
             },
 
-            "PUERTO QUETZAL":{
+            "PUERTO QUETZAL": {
                 country: "GUATEMALA",
                 WCprice: {
-                    [tenVol]:0
+                    [tenVol]: 0
 
                 },
                 BSprice: {
-                    [tenVol]:5
+                    [tenVol]: 5
                 },
                 get JXprice() { return this.WCprice; },
                 VIA: "GUATEMALA CITY",
@@ -5591,7 +5612,7 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
             },
 
             /* -----------------------------ALGERIA----------------------------------*/
-            "ALGIERS":{
+            "ALGIERS": {
                 country: "ALGERIA",
                 WCprice: {
                     [tenVol]: 191,
@@ -5606,7 +5627,7 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 shipName: "",
                 notes: "收ENS:USD25/SET +ICS: USD30/SET, 且所有包装必须有唛头，且要在提单唛头描述栏如实显示,否则会有罚款产生。"
             },
-            "ORAN":{
+            "ORAN": {
                 country: "ALGERIA",
                 WCprice: {
                     [tenVol]: 205,
@@ -5621,8 +5642,8 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 shipName: "",
                 notes: "收ENS:USD25/SET +ICS: USD30/SET, 且所有包装必须有唛头，且要在提单唛头描述栏如实显示,否则会有罚款产生。"
             },
-              /* -----------------------------埃及----------------------------------*/
-              "ALEXANDRIA":{
+            /* -----------------------------埃及----------------------------------*/
+            "ALEXANDRIA": {
                 country: "EGYPT",
                 WCprice: {
                     "0-1": -99,
@@ -5643,19 +5664,19 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: 26,
                 cashOnDelivery: true,
                 shipName: "WHL/COSCO",
-                notes:`1.收货人要提供ACID NUMBER
+                notes: `1.收货人要提供ACID NUMBER
 2.埃及海关规定：服装类(garments)，纺织品(textiles)，,药品（medicines）,鞋类制品(foot wears)以及其原材料(如布料)等类似货物，只能到达Alexandria, 不允许经过Alexandria转运至其他港口
 3.食品类货物需收货人到港前向相关部门申请进口才能清关
 4.凡中转港口都需要在ALEXANDRIA 清关才有中转
 5.薰蒸`
             },
 
-            "CAIRO":{
+            "CAIRO": {
                 country: "EGYPT",
                 WCprice: {
                     [tenVol]: 97,
                 },
-                BSprice: {[tenVol]: 102},
+                BSprice: { [tenVol]: 102 },
                 get JXprice() { return this.WCprice; },
                 VIA: "ALEXANDRIA",
                 ETD: "ALEXANDRIA",
@@ -5666,12 +5687,12 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 notes: ""
             },
 
-            "DAMIETTA":{
+            "DAMIETTA": {
                 country: "EGYPT",
                 WCprice: {
                     [tenVol]: 99,
                 },
-                BSprice: {[tenVol]: 104},
+                BSprice: { [tenVol]: 104 },
                 get JXprice() { return this.WCprice; },
                 VIA: "ALEXANDRIA",
                 ETD: "ALEXANDRIA",
@@ -5682,12 +5703,12 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 notes: ""
             },
 
-            "PORT SAID":{
+            "PORT SAID": {
                 country: "EGYPT",
                 WCprice: {
                     [tenVol]: 97,
                 },
-                BSprice: {[tenVol]: 102},
+                BSprice: { [tenVol]: 102 },
                 get JXprice() { return this.WCprice; },
                 VIA: "ALEXANDRIA",
                 ETD: "ALEXANDRIA",
@@ -5698,12 +5719,12 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 notes: ""
             },
 
-            "SOKHNA":{
+            "SOKHNA": {
                 country: "EGYPT",
                 WCprice: {
                     [tenVol]: 102,
                 },
-                BSprice: {[tenVol]: 107},
+                BSprice: { [tenVol]: 107 },
                 get JXprice() { return this.WCprice; },
                 VIA: "ALEXANDRIA",
                 ETD: "ALEXANDRIA",
@@ -5713,10 +5734,10 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 shipName: "",
                 notes: ""
             },
-            
 
-              /* -----------------------------突尼斯----------------------------------*/
-              "TUNIS":{
+
+            /* -----------------------------突尼斯----------------------------------*/
+            "TUNIS": {
                 country: "TUNISIA",
                 WCprice: {
                     [tenVol]: 147,
@@ -5729,11 +5750,11 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "+4",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:""
+                notes: ""
             },
 
-              /* -----------------------------肯尼亚----------------------------------*/
-              "MOMBASA":{
+            /* -----------------------------肯尼亚----------------------------------*/
+            "MOMBASA": {
                 country: "KENYA",
                 WCprice: {
                     "0-1": -33,
@@ -5741,75 +5762,75 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                     "3-10": -23,
                 },
                 BSprice: notPrice,
-                JXprice:notPrice,
+                JXprice: notPrice,
                 VIA: "DUBAI",
                 ETD: "DUBAI",
                 ETA: "DUBAI",
                 arrivalTime: "+12",
                 cashOnDelivery: true,
                 shipName: "",
-                notes:`1.中转港两周1班船, 薰蒸，不收危品
+                notes: `1.中转港两周1班船, 薰蒸，不收危品
 2. 肯尼亚（Kenya）COC认证是肯尼亚（Kenya）强制性的海关清关文件，没有该证书，货物抵达肯尼亚港口后将被拒绝入关
 3.单件重2.5吨, 整票不能超8吨，会有额外费用`
-              },
-              /* -----------------------------坦桑尼亚----------------------------------*/
-              "DAR ES SALAAM":{
+            },
+            /* -----------------------------坦桑尼亚----------------------------------*/
+            "DAR ES SALAAM": {
                 country: "TANZANIA",
                 WCprice: {
                     [tenVol]: 138,
                 },
                 BSprice: notPrice,
-                JXprice:notPrice,
+                JXprice: notPrice,
                 VIA: "DUBAI",
                 ETD: "DUBAI",
                 ETA: "DUBAI",
                 arrivalTime: "+13",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:`1. 目的港不能高收，运费不能到付，中转港三周1班船
+                notes: `1. 目的港不能高收，运费不能到付，中转港三周1班船
 2. 薰蒸  ，不收危品
 3.单票重量超5000kgs或超10cbm，case by case查询额外费  `
-              },
-              /* -----------------------------吉布提共和国----------------------------------*/
-              "DJIBOUTI":{
+            },
+            /* -----------------------------吉布提共和国----------------------------------*/
+            "DJIBOUTI": {
                 country: "DJIBOUTI",
                 WCprice: {
                     [tenVol]: 104,
                 },
                 BSprice: notPrice,
-                JXprice:notPrice,
+                JXprice: notPrice,
                 VIA: "DUBAI",
                 ETD: "DUBAI",
                 ETA: "DUBAI",
                 arrivalTime: "+6",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:`1. 薰蒸，不收危品，不能到付运费，不能高收目的港费用
+                notes: `1. 薰蒸，不收危品，不能到付运费，不能高收目的港费用
 2.单票超10cbm或超5吨，需提前跟代理确认额外费用.
 3. 出口至非洲Djibouti的所有货载，必须持有ECTN（电子货物跟踪单）证书（=Electronic Cargo Tracking Note Certificate) ，并需要在出口提单和发票文件上显示 ECTN No. ，否则清关提货将会延误或产生不必要麻烦。`
-              },
+            },
 
-              /* -----------------------------黎巴嫩----------------------------------*/
-              "BEIRUT":{
+            /* -----------------------------黎巴嫩----------------------------------*/
+            "BEIRUT": {
                 country: "LEBANON",
                 WCprice: {
                     [tenVol]: 119,
                 },
                 BSprice: notPrice,
-                JXprice:notPrice,
+                JXprice: notPrice,
                 VIA: "",
                 ETD: "",
                 ETA: "",
                 arrivalTime: "29",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:`1. 目的港不能高收，运费不能到付
+                notes: `1. 目的港不能高收，运费不能到付
 2. 薰蒸  ，不收危品
 3.单票重量超5000kgs或超10cbm，case by case查询额外费 `
-              },
+            },
 
-              /* -----------------------------毛里求斯----------------------------------*/
-              "PORT LOUIS":{
+            /* -----------------------------毛里求斯----------------------------------*/
+            "PORT LOUIS": {
                 country: "MAURITIUS",
                 WCprice: {
                     [tenVol]: 75,
@@ -5824,11 +5845,11 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "22",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:"香港直拼,提单显示的唛头要以实际货物相符，否则到港将会产生更改费"
-              },
+                notes: "香港直拼,提单显示的唛头要以实际货物相符，否则到港将会产生更改费"
+            },
 
-              /* -----------------------------马达加斯加共和国----------------------------------*/
-              "TAMATAVE":{
+            /* -----------------------------马达加斯加共和国----------------------------------*/
+            "TAMATAVE": {
                 country: "MADAGASCAR",
                 WCprice: {
                     [tenVol]: 150,
@@ -5844,11 +5865,11 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "+10",
                 cashOnDelivery: true,
                 shipName: "",
-                notes:`香港直拼,提单显示的唛头要以实际货物相符，否则到港将会产生更改费`
-              },
+                notes: `香港直拼,提单显示的唛头要以实际货物相符，否则到港将会产生更改费`
+            },
 
-              /* -----------------------------法属留尼旺----------------------------------*/
-              "Point De Galet":{
+            /* -----------------------------法属留尼旺----------------------------------*/
+            "Point De Galet": {
                 country: "REUNION",
                 WCprice: {
                     [tenVol]: 150,
@@ -5864,11 +5885,11 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "+10",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:`需预付VGM FEE AT PORT LOUIS :USD15/ SET+ENS:USD30SET`
-              },
+                notes: `需预付VGM FEE AT PORT LOUIS :USD15/ SET+ENS:USD30SET`
+            },
 
-              /* -----------------------------塞舌尔----------------------------------*/
-              "MAHE":{
+            /* -----------------------------塞舌尔----------------------------------*/
+            "MAHE": {
                 country: "SEYCHELLES",
                 WCprice: {
                     [tenVol]: 245,
@@ -5884,11 +5905,11 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "+10",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:`需要加上 VGM Fee AT PLT  USD15/BL，只能预付`
-              },
+                notes: `需要加上 VGM Fee AT PLT  USD15/BL，只能预付`
+            },
 
-              /* -----------------------------马约特岛----------------------------------*/
-              "LONGONI":{
+            /* -----------------------------马约特岛----------------------------------*/
+            "LONGONI": {
                 country: "MAYOTTE",
                 WCprice: {
                     [tenVol]: 240,
@@ -5904,11 +5925,11 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "+10",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:`需要加上VGM FEE AT PLT:  USD15/BL，+ENS:USD30 SET 只能预付`
-              },
+                notes: `需要加上VGM FEE AT PLT:  USD15/BL，+ENS:USD30 SET 只能预付`
+            },
 
-              /* -----------------------------加纳----------------------------------*/
-              "ACCRA":{
+            /* -----------------------------加纳----------------------------------*/
+            "ACCRA": {
                 country: "GHANA",
                 WCprice: {
                     [tenVol]: 245,
@@ -5924,10 +5945,10 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "+6",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:`目的港两项费用： T/S Cstoms Fee 43/BL + Solas Fee 17/BL需要预付`
-              },
+                notes: `目的港两项费用： T/S Cstoms Fee 43/BL + Solas Fee 17/BL需要预付`
+            },
 
-              "TEMA":{
+            "TEMA": {
                 country: "GHANA",
                 WCprice: {
                     [tenVol]: 90,
@@ -5943,10 +5964,10 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "+6",
                 cashOnDelivery: false,
                 shipName: "",
-                notes:`如果VIA DBN,目的港 T/S Customs Fee USD43/BL + Solas Fee USD17/BL 要预付 ，如果是直拼，不用加此两项`
-              },
+                notes: `如果VIA DBN,目的港 T/S Customs Fee USD43/BL + Solas Fee USD17/BL 要预付 ，如果是直拼，不用加此两项`
+            },
 
-              "DURBAN":{
+            "DURBAN": {
                 country: "SOUTH AFRICA",
                 WCprice: {
                     [tenVol]: -60,
@@ -5962,10 +5983,10 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "26",
                 cashOnDelivery: true,
                 shipName: "",
-                notes:`香港直拼,需加收ALH:USD48/ SET`
-              },
+                notes: `香港直拼,需加收ALH:USD48/ SET`
+            },
 
-              "CAPE TOWN":{
+            "CAPE TOWN": {
                 country: "SOUTH AFRICA",
                 WCprice: {
                     [tenVol]: -58,
@@ -5981,14 +6002,14 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 arrivalTime: "26",
                 cashOnDelivery: true,
                 shipName: "",
-                notes:`香港直拼,需加收ALH:USD48/ SET`
-              },
+                notes: `香港直拼,需加收ALH:USD48/ SET`
+            },
 
         };
 
 
 
-          
+
 
     </script>
 </body>
