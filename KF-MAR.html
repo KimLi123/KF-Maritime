@@ -505,6 +505,14 @@
             countryFlete(this.value.trim().toLowerCase());
         });
 
+        // 目的港自动转大写
+        document.getElementById('destination').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+        document.getElementById('country').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
         // 保持原有互斥复选框逻辑
         document.querySelectorAll('input[name="port"]').forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
@@ -1535,7 +1543,7 @@
             /* -----------------------------台湾----------------------------------*/
 
             "KEELUNG": {
-                country: "TAIWAN",
+                country: "ZHONGGUO",
                 WCprice: {
                     [tenVol]: 16
                 },
@@ -1558,7 +1566,7 @@
             },
 
             "TAICHUNG": {
-                country: "TAIWAN",
+                country: "ZHONGGUO",
                 WCprice: {
                     [tenVol]: 16
                 },
@@ -1581,7 +1589,7 @@
             },
 
             "KAOHSIUNG": {
-                country: "TAIWAN",
+                country: "ZHONGGUO",
                 WCprice: {
                     [tenVol]: 16
                 },
