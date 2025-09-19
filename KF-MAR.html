@@ -1935,7 +1935,7 @@
                 VIA: "",
                 ETD: 1,
                 ETA: 3,
-                arrivalTime: "25",
+                arrivalTime: "15",
                 cashOnDelivery: true,
                 shipName: "COSCO",
                 notes: `1/薰蒸， 不收危品
@@ -5300,6 +5300,56 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 cashOnDelivery: true,
                 shipName: "WHL/ASA"
             },
+
+            /* -----------------------------萨尔瓦多萨尔瓦多----------------------------------*/
+            "ACAJUTLA": {
+                country: "EL SALVADOR",
+                WCprice: {
+                    "0-1": -55,
+                    "1-3": -25,
+                    "3-5": 5,
+                    "5-10": 31
+                },
+                BSprice: {
+                    "0-1": -50,
+                    "1-3": -20,
+                    "3-5": 10,
+                    "5-10": 36
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "5",
+                arrivalTime: 50,
+                cashOnDelivery: true,
+                shipName: "HAPAG LLOYD",
+                notes: `接牌子货，到港有被没收风险，目的港仓库在San Salvador ,单票超过5000KGS ，运费要CASE BY CASE  只能正本，单票超过5000KGS ，运费要CASE BY CASE  GUATEMALA CITY (含经其中转的点)单件尺寸、重量限制：length 3.5mts, height 2mts, width 2.3mts, less than 1TON/pkg`
+            },
+
+            "SAN SALVADOR": {
+                country: "EL SALVADOR",
+                WCprice: {
+                    "0-1": -50,
+                    "1-3": -20,
+                    "3-5": 5,
+                    "5-10": 33
+                },
+                BSprice: {
+                    "0-1": -45,
+                    "1-3": -15,
+                    "3-5": 8,
+                    "5-10": 38
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "ACAJUTLA",
+                ETD: "ACAJUTLA",
+                ETA: "ACAJUTLA",
+                arrivalTime: "+8",
+                cashOnDelivery: true,
+                shipName: "HAPAG LLOYD",
+                notes: `接牌子货，到港有被没收风险，目的港仓库在San Salvador ,单票超过5000KGS ，运费要CASE BY CASE  只能正本，单票超过5000KGS ，运费要CASE BY CASE  GUATEMALA CITY (含经其中转的点)单件尺寸、重量限制：length 3.5mts, height 2mts, width 2.3mts, less than 1TON/pkg`
+            },
+
             /* -----------------------------尼瓜拉瓜----------------------------------*/
             "MANAGUA": {
                 country: "NICARAGUA",
