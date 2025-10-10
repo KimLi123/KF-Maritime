@@ -467,7 +467,7 @@
                 '冰岛', '比利时', '爱尔兰', '西班牙', '马耳他', '意大利', '以色列',
                 '塞浦路斯', '希腊', '土耳其', '乌克兰', '摩尔多瓦', '阿尔及利亚', '突尼斯',
                 'germany', 'slovenia', 'croatia', 'switzerland', 'norway', 'latvia',
-                'lithuania', 'estonia', 'poland', 'romania', 'bulgaria', 'united kingdom','UK','felixstowe','FELIXSTOWE','England',
+                'lithuania', 'estonia', 'poland', 'romania', 'bulgaria', 'united kingdom', 'UK', 'felixstowe', 'FELIXSTOWE', 'England',
                 'czech republic', 'austria', 'slovakia', 'hungary', 'denmark', 'sweden', 'finland',
                 'france', 'netherlands', 'portugal', 'georgia', 'armenia', 'azerbaijan',
                 'iceland', 'belgium', 'ireland', 'spain', 'malta', 'italy', 'israel',
@@ -506,10 +506,10 @@
         });
 
         // 目的港自动转大写
-        document.getElementById('destination').addEventListener('input', function() {
+        document.getElementById('destination').addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
-        document.getElementById('country').addEventListener('input', function() {
+        document.getElementById('country').addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
 
@@ -737,10 +737,10 @@
                 storageFee = '入仓费：RMB 42/CBM + 40/BL';
             } else if (origin2 === 'XIAMEN') {
                 storageFee = '入仓费：RMB 25/CBM';
-            }else if (origin2 === 'SHENZHEN') {
+            } else if (origin2 === 'SHENZHEN') {
                 storageFee = '入仓费：RMB 130/BL，木箱和托盘加50';
             }
-            resultLines.push(storageFee+'（司机办单缴纳给码头）');
+            resultLines.push(storageFee + '（司机办单缴纳给码头）');
             // 合并结果并清理空白
             let resultHTML = resultLines.join('\n').replace(/\n{3,}/g, '\n\n');
 
@@ -4693,7 +4693,7 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 shipName: "CMA/COSCO",
                 notes: ""
             },
-              /* -----------------------------法属圭亚那----------------------------------*/
+            /* -----------------------------法属圭亚那----------------------------------*/
             "DESGRAD DES CANNES": {
                 country: "FRENCH GUYANA",
                 WCprice: {
@@ -4730,8 +4730,8 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
                 shipName: "CMA/COSCO",
                 notes: "只能正本,目的港不能高收"
             },
-              /* -----------------------------多米尼加----------------------------------*/
-              "CAUCEDO": {
+            /* -----------------------------多米尼加----------------------------------*/
+            "CAUCEDO": {
                 country: "DOMINICAN",
                 WCprice: {
                     "0-1": -23,
@@ -5078,6 +5078,96 @@ RIO DEJANEIRO,只要CNEE在目的港完成清关交税并得到海关放行后�
 5.私人物品必须事先获取玻利维亚在起运地大使馆出具的书面申报证明，同时也必须证明SHPR/CNEE在玻利维亚以外的国家或地区居住连续超过两年；           `
             },
 
+
+
+            "BUENAVENTURA": {
+                country: "COLOMBIA",
+                WCprice: {
+                    "0-1": -160,
+                    "1-3": -140,
+                    "3-5": -113,
+                    "5-10": -100
+                },
+                BSprice: {
+                    "0-1": -155,
+                    "1-3": -135,
+                    "3-5": -108,
+                    "5-10": -104
+                },
+                get JXprice() { return this.WCprice; },
+                VIA: "",
+                ETD: "4",
+                ETA: "2",
+                arrivalTime: 38,
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.提单显示NCM NO.(商品编码)和NIT NO.（收货人商业登记号码），需提供运费，但可不显示在提单上。                          
+2.根据哥伦比亚海关规定，进口货载在船到港后只有30天（calendar days ）的清关时间限制，超过此限的，将被视为弃货处理，并产生相应的海关罚金（根据不同的货值来计算）。 
+3.只能出正本提单。                                   
+4.提供清晰唛头，含进仓单号，收发货人信息。             
+5.服装面料类产品，私人物品，需要提供跟代理确认是否能接。              
+6.香港二程冷冻柜,宽2.1米以内,高:2.25米以内
+7. BOGOTA要收取SATELLITE DEVICES FEE： USD20/BL`},
+
+            "BOGOTA": {
+                country: "COLOMBIA",
+                WCprice: { [tenVol]: 90 },
+                BSprice: { [tenVol]: 85 },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "",
+                ETA: "",
+                arrivalTime: "+6",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.提单显示NCM NO.(商品编码)和NIT NO.（收货人商业登记号码），需提供运费，但可不显示在提单上。                          
+2.根据哥伦比亚海关规定，进口货载在船到港后只有30天（calendar days ）的清关时间限制，超过此限的，将被视为弃货处理，并产生相应的海关罚金（根据不同的货值来计算）。 
+3.只能出正本提单。                                   
+4.提供清晰唛头，含进仓单号，收发货人信息。             
+5.服装面料类产品，私人物品，需要提供跟代理确认是否能接。              
+6.香港二程冷冻柜,宽2.1米以内,高:2.25米以内
+7. BOGOTA要收取SATELLITE DEVICES FEE： USD20/BL`
+            },
+
+            "CARTAGENA": {
+                country: "COLOMBIA",
+                WCprice: { [tenVol]: 80 },
+                BSprice: { [tenVol]: 75 },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "",
+                ETA: "",
+                arrivalTime: "+1",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.提单显示NCM NO.(商品编码)和NIT NO.（收货人商业登记号码），需提供运费，但可不显示在提单上。                          
+2.根据哥伦比亚海关规定，进口货载在船到港后只有30天（calendar days ）的清关时间限制，超过此限的，将被视为弃货处理，并产生相应的海关罚金（根据不同的货值来计算）。 
+3.只能出正本提单。                                   
+4.提供清晰唛头，含进仓单号，收发货人信息。             
+5.服装面料类产品，私人物品，需要提供跟代理确认是否能接。              
+6.香港二程冷冻柜,宽2.1米以内,高:2.25米以内
+7. BOGOTA要收取SATELLITE DEVICES FEE： USD20/BL`
+            },
+
+            "BARRANQUILLA": {
+                country: "COLOMBIA",
+                WCprice: { [tenVol]: 90 },
+                BSprice: { [tenVol]: 85 },
+                get JXprice() { return this.WCprice; },
+                VIA: "COLON",
+                ETD: "",
+                ETA: "",
+                arrivalTime: "+2",
+                cashOnDelivery: true,
+                shipName: "WHL",
+                notes: `1.提单显示NCM NO.(商品编码)和NIT NO.（收货人商业登记号码），需提供运费，但可不显示在提单上。                          
+2.根据哥伦比亚海关规定，进口货载在船到港后只有30天（calendar days ）的清关时间限制，超过此限的，将被视为弃货处理，并产生相应的海关罚金（根据不同的货值来计算）。 
+3.只能出正本提单。                                   
+4.提供清晰唛头，含进仓单号，收发货人信息。             
+5.服装面料类产品，私人物品，需要提供跟代理确认是否能接。              
+6.香港二程冷冻柜,宽2.1米以内,高:2.25米以内
+7. BOGOTA要收取SATELLITE DEVICES FEE： USD20/BL`
+            },
             /* -----------------------------厄瓜多尔----------------------------------*/
             "GUAYAQUIL": {
                 country: "ECUADOR",
