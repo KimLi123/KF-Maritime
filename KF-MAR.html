@@ -589,7 +589,7 @@
         //查询功能
         function generateResult() {
             if (!validateDocOptions()) {
-                return alert('有单证和买单必须二选一！');
+                return alert('有单证和无单必须二选一！');
             }
 
             const portName = document.getElementById('destination').value.trim().toUpperCase();
@@ -653,10 +653,10 @@
 
             // 动态费用设置
             let docFee = 260;
-            let buyFee = 200;
+            let buyFee = 300;
 
             if (isShenzhen) {
-                docFee = 320;  // 深圳有单证费用
+                docFee = 350;  // 深圳有单证费用
                 buyFee = 520;  // 深圳买单费用
             }
 
@@ -697,7 +697,7 @@
                 //     document.getElementById('customsFeeInput').value = customsFee === 60 ? '60' : '120';
                 // }
             } else if (selectedCustomsType === 'buyDoc') {
-                fees.push(`买单证报关：RMB ${customsFee}/BL（无牌普货六个品名内）`);
+                fees.push(`无单证报关：RMB ${customsFee}/BL（无牌普货六个品名内）`);
             }
 
             // 构建结果时优化换行逻辑（关键修改）
