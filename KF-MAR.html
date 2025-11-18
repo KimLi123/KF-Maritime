@@ -492,11 +492,15 @@
             const isEurope = europeanCountries.some(c => countryValue.includes(c));
             const isAmerica = americanCountries.some(c => countryValue.includes(c));
             const isJapan = countryValue.includes('日本') || countryValue.includes('japan');
+            const isCanda = countryValue.includes('加拿大') || countryValue.includes('canada');
+
 
             document.getElementById('ens').checked = isEurope;
             document.getElementById('ics2').checked = isEurope;
             document.getElementById('ams').checked = isAmerica;
             document.getElementById('afr').checked = isJapan;
+            document.getElementById('ddc').checked = isCanda;
+
         }
 
         document.querySelectorAll('input[name="customsType"]').forEach(radio => {
@@ -693,9 +697,9 @@
             if (document.getElementById('afr').checked) fees.push('AFR: USD 30/BL');
             if (document.getElementById('ddc').checked) fees.push('DDC: USD 18/RT');
             // 当国家是CANADA时自动添加DDC费用
-            if (country.toLowerCase().includes('canada')) {
-                fees.push('DDC: USD 18/RT');
-            }
+            // if (country.toLowerCase().includes('canada')) {
+            //     fees.push('DDC: USD 18/RT');
+            // }
 
             const selectedCustomsType = document.querySelector('input[name="customsType"]:checked').value;
             if (selectedCustomsType === 'customsDoc') {
