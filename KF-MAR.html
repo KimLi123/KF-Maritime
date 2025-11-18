@@ -358,6 +358,8 @@
             <label><input type="checkbox" id="ams"> AMS: </label>
             <label><input type="checkbox" id="isf"> ISF: </label>
             <label><input type="checkbox" id="afr"> AFR: </label>
+            <label><input type="checkbox" id="ddc"> DDC: </label>
+
 
 
         </div>
@@ -689,6 +691,12 @@
             if (document.getElementById('ams').checked) fees.push('AMS: USD 25/BL');
             if (document.getElementById('isf').checked) fees.push('ISF: USD 35/BL');
             if (document.getElementById('afr').checked) fees.push('AFR: USD 30/BL');
+            if (document.getElementById('ddc').checked) fees.push('DDC: USD 18/RT');
+            // 当国家是CANADA时自动添加DDC费用
+            if (country.toLowerCase().includes('canada')) {
+                fees.push('DDC: USD 18/RT');
+            }
+
             const selectedCustomsType = document.querySelector('input[name="customsType"]:checked').value;
             if (selectedCustomsType === 'customsDoc') {
                 fees.push(`有单证报关：RMB ${customsFee}/BL(六个品名内价格)`);
