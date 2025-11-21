@@ -721,7 +721,7 @@
             if (destination) resultLines.push(`目的港：${destination}`);
 
             // 固定费用项（始终显示）
-            resultLines.push(`O/F：USD ${shippingCost ? shippingCost : price} /RT`);
+            resultLines.push(`O/F：USD ${shippingCost ? shippingCost : price} /RT（1CBM:1000KGS）`);
 
             // 费用清单处理
             if (fees.length > 0) {
