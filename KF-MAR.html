@@ -418,8 +418,15 @@
         });
         // 新增CFS自动勾选逻辑
         document.getElementById('origin').addEventListener('change', function () {
-            const isShenzhen = this.value === 'SHENZHEN';
-            document.getElementById('cfsOption').checked = isShenzhen;
+            // 切换起运港时先重置CFS勾选状态
+            document.getElementById('cfsOption').checked = false;
+            
+            // 然后根据新起运港决定是否勾选CFS
+            const isShenzhenOrHongKong = this.value === 'SHENZHEN' || this.value === 'HONGKONG';
+            if (isShenzhenOrHongKong) {
+                document.getElementById('cfsOption').checked = true;
+            }
+            
             updateCustomsFee(); // 触发费用更新
         });
 
@@ -688,8 +695,14 @@
 
             // 生成费用清单
             let fees = [];
-            if (document.getElementById('docFee').checked) fees.push('DOC: RMB 200/BL');
-            if (document.getElementById('cfsOption').checked) fees.push('CFS: RMB 40/RT');
+            if (origin === 'HONGKONG') {
+                if (document.getElementById('docFee').checked) fees.push('DOC: HKD 640/BL');
+                if (document.getElementById('cfsOption').checked) fees.push('CFS: HKD 65/RT');
+                fees.push('VGM: USD 15/SET');
+            } else {
+                if (document.getElementById('docFee').checked) fees.push('DOC: RMB 200/BL');
+                if (document.getElementById('cfsOption').checked) fees.push('CFS: RMB 40/RT');
+            }
             if (document.getElementById('ens').checked) fees.push('ENS: USD 25/BL');
             if (document.getElementById('ics2').checked) fees.push('ICS2: USD 30/BL');
             if (document.getElementById('ams').checked) fees.push('AMS: USD 25/BL');
@@ -702,7 +715,7 @@
             // }
 
             const selectedCustomsType = document.querySelector('input[name="customsType"]:checked').value;
-            if (selectedCustomsType === 'customsDoc') {
+            if (origin !== 'HONGKONG' && selectedCustomsType === 'customsDoc') {
                 fees.push(`有单证报关：RMB ${customsFee}/BL(六个品名内价格)`);
                 // 动态设置深圳报关费用
                 // if (origin === 'SHENZHEN') {
@@ -737,7 +750,9 @@
             const origin2 = document.getElementById('origin').value;
             const selectedWarehouse = document.querySelector('input[name="port"]:checked')?.id;
 
-            if (origin2 === 'GUANGZHOU') {
+            if (origin2 === 'HONGKONG') {
+                storageFee = '入仓费：HKD 610/SET';
+            } else if (origin2 === 'GUANGZHOU') {
                 if (selectedWarehouse === 'wuchong') {
                     storageFee = '入仓费：RMB 100/BL，如需过磅额外加30';
                 } else if (selectedWarehouse === 'jiaoxin') {
