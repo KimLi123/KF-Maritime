@@ -713,6 +713,12 @@
             // if (country.toLowerCase().includes('canada')) {
             //     fees.push('DDC: USD 18/RT');
             // }
+            // 当起运港是SHENZHEN且目的港是KEELUNG、TAICHUNG或KAOHSIUNG时添加EBS费用
+            // const isShenzhen = origin === 'SHENZHEN';
+            const specialDestinations = ['KEELUNG', 'TAICHUNG', 'KAOHSIUNG'];
+            if (isShenzhen && specialDestinations.includes(destination)) {
+                fees.push('EBS: RMB 50/RT');
+            }
 
             const selectedCustomsType = document.querySelector('input[name="customsType"]:checked').value;
             if (origin !== 'HONGKONG' && selectedCustomsType === 'customsDoc') {
