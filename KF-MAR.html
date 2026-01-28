@@ -336,7 +336,7 @@
         <div class="input-group"><label>大船开时间：</label><input value="X" type="text" id="bigshipDay_2"></div>
         <div class="input-group"><label>时间：</label><input value="X" type="text" id="ETATime"></div>
         <div class="input-group"><label>中转：</label><input type="text" id="transfer"></div>
-        <div class="input-group"><label>体积：</label><input type="text" id="volume"></div>
+        <div class="input-group"><label>体积：</label><input value="1" type="text" id="volume"></div>
 
         <div>
             <label>报关方式：</label>
@@ -351,7 +351,7 @@
             <label><input type="checkbox" id="jiaoxin" name="port"> 滘心</label>
         </div>
         <div class="checkbox-group">
-            <label><input type="checkbox" id="docFee" checked> 文件费:</label>
+            <label><input type="checkbox" id="docFee" checked> 文件费：</label>
             <label><input type="checkbox" id="cfsOption"> CFS</label> <!-- 新增CFS选项 -->
             <label><input type="checkbox" id="ens"> ENS:</label>
             <label><input type="checkbox" id="ics2"> ICS2:</label>
@@ -700,7 +700,7 @@
                 if (document.getElementById('cfsOption').checked) fees.push('CFS: HKD 65/RT');
                 fees.push('VGM: USD 15/SET');
             } else {
-                if (document.getElementById('docFee').checked) fees.push('文件费: RMB 200/BL');
+                if (document.getElementById('docFee').checked) fees.push('文件费：RMB 200/BL');
                 if (document.getElementById('cfsOption').checked) fees.push('CFS: RMB 40/RT');
             }
             if (document.getElementById('ens').checked) fees.push('ENS: USD 25/BL');
