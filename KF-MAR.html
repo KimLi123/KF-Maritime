@@ -351,7 +351,7 @@
             <label><input type="checkbox" id="jiaoxin" name="port"> 滘心</label>
         </div>
         <div class="checkbox-group">
-            <label><input type="checkbox" id="docFee" checked> DOC:</label>
+            <label><input type="checkbox" id="docFee" checked> 文件费:</label>
             <label><input type="checkbox" id="cfsOption"> CFS</label> <!-- 新增CFS选项 -->
             <label><input type="checkbox" id="ens"> ENS:</label>
             <label><input type="checkbox" id="ics2"> ICS2:</label>
@@ -696,11 +696,11 @@
             // 生成费用清单
             let fees = [];
             if (origin === 'HONGKONG') {
-                if (document.getElementById('docFee').checked) fees.push('DOC: HKD 640/BL');
+                if (document.getElementById('docFee').checked) fees.push('文件费: HKD 640/BL');
                 if (document.getElementById('cfsOption').checked) fees.push('CFS: HKD 65/RT');
                 fees.push('VGM: USD 15/SET');
             } else {
-                if (document.getElementById('docFee').checked) fees.push('DOC: RMB 200/BL');
+                if (document.getElementById('docFee').checked) fees.push('文件费: RMB 200/BL');
                 if (document.getElementById('cfsOption').checked) fees.push('CFS: RMB 40/RT');
             }
             if (document.getElementById('ens').checked) fees.push('ENS: USD 25/BL');
@@ -728,7 +728,7 @@
                 //     document.getElementById('customsFeeInput').value = customsFee === 60 ? '60' : '120';
                 // }
             } else if (selectedCustomsType === 'buyDoc') {
-                fees.push(`无单证报关：RMB ${customsFee}/BL（无牌普货六个品名内）`);
+                fees.push(`无单证报关：RMB ${customsFee}/BL（无牌无电无磁无液体普货）`);
             }
 
             // 构建结果时优化换行逻辑（关键修改）
@@ -740,7 +740,7 @@
             if (destination) resultLines.push(`目的港：${destination}`);
 
             // 固定费用项（始终显示）
-            resultLines.push(`O/F：USD ${shippingCost ? shippingCost : price} /RT（1CBM:1000KGS）`);
+            resultLines.push(`海运费：USD ${shippingCost ? shippingCost : price} /RT（1CBM:1000KGS）`);
 
             // 费用清单处理
             if (fees.length > 0) {
@@ -2656,8 +2656,8 @@
                 BSprice: notPrice,
                 get JXprice() { return this.WCprice; },
                 VIA: "",
-                ETD: "",
-                ETA: "",
+                ETD: "1",
+                ETA: "4",
                 arrivalTime: "32",
                 cashOnDelivery: true,
                 shipName: "COSCO",
